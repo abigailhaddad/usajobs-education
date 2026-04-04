@@ -1,0 +1,5 @@
+pandas
+pyarrow
+litellm
+pydantic
+python-dotenv
