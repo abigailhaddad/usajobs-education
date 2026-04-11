@@ -3,3 +3,4 @@ pyarrow
 litellm
 pydantic
 python-dotenv
+tqdm

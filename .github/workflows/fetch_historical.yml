@@ -1,0 +1,69 @@
+name: Fetch historical 2210 jobs
+
+# Scrapes USAJobs announcement pages for 2210 jobs that are in the
+# historical_jobs parquets on R2 but absent from 2210_raw.parquet.
+# Uploads the resulting data/2210_historical_raw.parquet as a workflow
+# artifact you can download from the run page.
+#
+# Resume semantics: actions/cache restores the parquet from the most
+# recent prior run (via restore-keys), so if a run dies partway through
+# the next run picks up where it left off.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max new jobs to scrape (blank = all ~17k)'
+        required: false
+        default: ''
+      delay:
+        description: 'Seconds between requests'
+        required: false
+        default: '0.5'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330  # just under GitHub Actions' 6h job cap
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pandas pyarrow tqdm
+
+      - name: Fetch current 2210 raw (exclusion list)
+        run: python fetch_data.py
+
+      - name: Restore prior historical parquet (resume)
+        uses: actions/cache@v4
+        with:
+          path: data/2210_historical_raw.parquet
+          # Unique key so each run writes a fresh cache entry; the
+          # prefix restore-keys lets us pull the newest prior run's
+          # parquet as a starting point.
+          key: 2210-historical-${{ github.run_id }}
+          restore-keys: |
+            2210-historical-
+
+      - name: Scrape historical 2210
+        run: |
+          set -euo pipefail
+          args="--delay ${{ inputs.delay || '0.5' }}"
+          if [ -n "${{ inputs.limit }}" ]; then
+            args="$args --limit ${{ inputs.limit }}"
+          fi
+          echo "Running: python fetch_historical.py $args"
+          python fetch_historical.py $args
+
+      - name: Upload historical parquet artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 2210_historical_raw
+          path: data/2210_historical_raw.parquet
+          if-no-files-found: warn
+          retention-days: 90
