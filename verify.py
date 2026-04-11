@@ -16,6 +16,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import random
 import re
 from pathlib import Path
 
@@ -33,11 +34,12 @@ OUTPUT = DATA_DIR / "2210_verified.parquet"
 VERIFY_CACHE = DATA_DIR / "verification_cache.json"
 
 VERIFY_MODEL = "openai/gpt-5.4"
-MAX_CONCURRENT = 10
+MAX_CONCURRENT = 5
+MAX_RETRIES = 5
 
 # Bump whenever the verify prompt or category set changes — cache entries
 # are keyed against this so stale verifications don't get returned.
-PROMPT_VERSION = "v2-2026-04-11-education-substitutable"
+PROMPT_VERSION = "v3-2026-04-11-mandatory-edge-case"
 
 # Regex patterns that flag a no_education classification for review
 SUSPICIOUS_PATTERNS = [
@@ -97,7 +99,14 @@ CRITICAL DISTINCTIONS:
    - "You MUST have a bachelor's degree..." with no experience-only path → education_required
    - "Positive education requirement" in 2210 context is ambiguous — it often refers to the OPM Alternative A standard that ALLOWS experience or education. Check whether the posting forecloses the experience path entirely before calling it education_required.
 
-3. A degree is only "required" if the posting makes clear you CANNOT qualify without it at some grade level.
+3. HARD EDGE CASE — "degree is mandatory" with a separate experience section.
+   Some postings have Education field saying a degree is "mandatory" AND a Qualifications Summary listing required experience as a separate section. The question is whether these are ALTERNATIVES (one OR the other) or CUMULATIVE (both required).
+   Test: look for explicit "OR" / "in lieu of" / "substitute" / "may qualify with" language linking them.
+   - CUMULATIVE (no OR/in-lieu/substitute language) → education_required. Both the degree AND the experience are needed; the degree's "mandatory" label stands.
+   - ALTERNATIVES (has OR/in-lieu/substitute language somewhere) → education_substitutable.
+   Boilerplate like "If you are using education to qualify for this position, you must provide transcripts..." is NOT by itself evidence of substitutability — it's a standard transcript-submission directive. You need to see the degree presented as an ALTERNATIVE.
+
+4. A degree is only "required" if the posting makes clear you CANNOT qualify without it at some grade level.
 
 The first-pass classification was: {original_category}
 The first-pass reasoning was: {original_reasoning}
@@ -157,6 +166,19 @@ def save_verify_cache(cache: dict):
     VERIFY_CACHE.write_text(json.dumps(cache, indent=2))
 
 
+def _is_retryable(exc: Exception) -> bool:
+    s = str(exc).lower()
+    billing_markers = (
+        "insufficient_quota",
+        "insufficient quota",
+        "exceeded your current quota",
+        "check your plan and billing",
+    )
+    if any(m in s for m in billing_markers):
+        return False
+    return any(k in s for k in ("rate", "429", "timeout", "timed out", "connection", "overloaded"))
+
+
 async def verify_one(row: pd.Series, semaphore: asyncio.Semaphore) -> VerificationResult:
     async with semaphore:
         system = VERIFY_PROMPT.format(
@@ -165,15 +187,24 @@ async def verify_one(row: pd.Series, semaphore: asyncio.Semaphore) -> Verificati
         )
         user_msg = build_verify_prompt(row)
 
-        resp = await acompletion(
-            model=VERIFY_MODEL,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user_msg},
-            ],
-            response_format=VerificationResult,
-        )
-        return VerificationResult.model_validate_json(resp.choices[0].message.content)
+        for attempt in range(MAX_RETRIES):
+            try:
+                resp = await acompletion(
+                    model=VERIFY_MODEL,
+                    messages=[
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user_msg},
+                    ],
+                    response_format=VerificationResult,
+                    temperature=0,
+                )
+                return VerificationResult.model_validate_json(resp.choices[0].message.content)
+            except Exception as e:
+                if attempt == MAX_RETRIES - 1 or not _is_retryable(e):
+                    raise
+                delay = min(60, (2 ** attempt) + random.random())
+                await asyncio.sleep(delay)
+        raise RuntimeError("retry loop exited without returning or raising")
 
 
 async def run_verification(to_verify: pd.DataFrame, cache: dict) -> list[dict]:

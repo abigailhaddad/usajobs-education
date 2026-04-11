@@ -13,6 +13,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import random
 import time
 from enum import Enum
 from pathlib import Path
@@ -32,7 +33,8 @@ OUTPUT = DATA_DIR / "2210_classified.parquet"
 CACHE_FILE = DATA_DIR / "classification_cache.json"
 
 MODEL = "openai/gpt-5.4-mini"
-MAX_CONCURRENT = 20
+MAX_CONCURRENT = 5
+MAX_RETRIES = 5
 
 
 class EducationCategory(str, Enum):
@@ -46,7 +48,7 @@ class EducationCategory(str, Enum):
 # Bump this string whenever the prompt or category set changes so the
 # text-keyed classification cache invalidates cleanly — old entries stay
 # in the file but are no longer addressable.
-PROMPT_VERSION = "v2-2026-04-11-education-substitutable"
+PROMPT_VERSION = "v3-2026-04-11-mandatory-edge-case"
 
 
 class EducationClassification(BaseModel):
@@ -88,14 +90,15 @@ Classify into exactly one category (mutually exclusive):
 KEY DISTINCTIONS
 
 1. education_substitutable vs no_education — does the posting OFFER education as a qualifying path?
-   - "If you are using Education to qualify for this position, College transcripts must be submitted..." → education_substitutable (education IS being offered as an alternative path)
    - "Ph.D. or equivalent doctoral degree or 3 full years of graduate education to qualify by education alone" at a given grade → education_substitutable (the phrase "by education alone" explicitly means experience is the other path AND education alone is sufficient)
    - "Undergraduate and Graduate Education. Major study--computer science, information science, information systems management..." listed in the Education field → education_substitutable (the posting is telling you what degrees count for the education path)
    - "Specialized experience: 1 year at the next lower grade... OR Education: bachelor's degree with a major in..." → education_substitutable
+   - "In lieu of specialized experience, you may have..." / "SUBSTITUTION OF EDUCATION FOR SPECIALIZED EXPERIENCE" → education_substitutable
    - "Education is not substitutable for specialized experience at the GS-12 grade level" at EVERY grade → no_education
    - "There is no substitution of education for experience" → no_education
    - Education field is empty or only contains boilerplate like transcript-submission instructions → no_education
    - Education field only mentions high school / GED → no_education
+   - Boilerplate like "If you are using education to qualify for this position, College transcripts must be submitted" is NOT by itself evidence of substitutability — it's a standard transcript-submission directive that appears on postings regardless of whether education is actually a qualifying path. You need to see the degree presented as an ALTERNATIVE (OR / in lieu / substitute / "may qualify with") elsewhere in the text.
 
 2. education_substitutable vs education_required — is the degree MANDATORY?
    - "You may qualify with [experience] OR [degree]" → education_substitutable (either path works)
@@ -103,7 +106,25 @@ KEY DISTINCTIONS
    - "This position has a positive education requirement — a 4-year degree is required" at all grades → education_required
    - "Positive education requirement" is NOT automatically education_required. In 2210 context it often refers to the OPM standard that allows experience OR education. Look at whether the posting actually forecloses the experience path.
 
-3. education_required_higher vs education_substitutable at higher grades
+3. HARD EDGE CASE — "degree is mandatory" with a separate experience section.
+
+   Some postings list BOTH a mandatory degree in the Education field AND required specialized experience in the Qualifications Summary as SEPARATE sections. The question is whether these are ALTERNATIVES (you need one OR the other) or CUMULATIVE (you need BOTH).
+
+   The test: look for explicit "OR" / "in lieu of" / "substitute" / "may qualify with" language linking the two. If that language is absent, the degree AND experience are both required → education_required.
+
+   CUMULATIVE (both required) → education_required:
+     Education field: "An undergraduate degree in computer science is mandatory. The degree must be in..."
+     Qual summary:    "GENERAL EXPERIENCE: ... SPECIALIZED EXPERIENCE: You must have 1 year of experience at the next lower grade."
+     (No OR / in lieu / substitute language anywhere. You need BOTH the degree and the experience. Degree is mandatory → education_required.)
+
+   ALTERNATIVES (education substitutes for experience) → education_substitutable:
+     "You may qualify with 1 year of specialized experience OR a bachelor's degree in..."
+     "In lieu of specialized experience, you may have..."
+     "SUBSTITUTION OF EDUCATION FOR SPECIALIZED EXPERIENCE: ..."
+
+   When in doubt on this edge case: if the Education field says "mandatory" / "required" and you can't find OR/in-lieu/substitute language connecting it to the experience requirements, classify as education_required.
+
+4. education_required_higher vs education_substitutable at higher grades
    - If lower grades allow experience-or-education AND higher grades ALSO allow experience-or-education → education_substitutable
    - If lower grades allow experience-or-education AND higher grades require the degree with NO experience path → education_required_higher
    - If lower grades require experience-only AND higher grades require the degree → education_required_higher (some grade is blocked without a degree)
@@ -121,6 +142,11 @@ no_education:
 education_required:
 "This position has a positive education requirement in addition to the specialized experience requirement. You must possess a bachelor's degree in computer science, engineering, information science, information systems management, mathematics, operations research, statistics, or technology management."
 (Degree is on top of experience, not as an alternative — the degree is mandatory.)
+
+education_required (mandatory-degree-plus-experience pattern):
+Education field: "An undergraduate degree from an accredited college/university is mandatory. The degree must be in Computer and Information Sciences and Support Services..."
+Qual summary:    "GENERAL EXPERIENCE: ... SPECIALIZED EXPERIENCE: Must have at least 12 months of Cyberspace program supervisory experiences..."
+(The education field says "mandatory"; the qual summary lists experience separately with no OR/in-lieu/substitute language linking them. Both are required. The "If you are using education to qualify" transcript directive is boilerplate and does not establish substitutability. → education_required.)
 
 IMPORTANT: Your key_quote must be copied EXACTLY from the input text — do not paraphrase or summarize. If the classification is based on the ABSENCE of information (e.g., empty education field), use '(no relevant text)'."""
 
@@ -150,22 +176,48 @@ def save_cache(cache: dict):
     CACHE_FILE.write_text(json.dumps(cache, indent=2))
 
 
+def _is_retryable(exc: Exception) -> bool:
+    s = str(exc).lower()
+    # Billing / quota failures: retry won't help — these need human
+    # intervention (top up balance, check plan tier). Fail fast.
+    billing_markers = (
+        "insufficient_quota",
+        "insufficient quota",
+        "exceeded your current quota",
+        "check your plan and billing",
+    )
+    if any(m in s for m in billing_markers):
+        return False
+    return any(k in s for k in ("rate", "429", "timeout", "timed out", "connection", "overloaded"))
+
+
 async def classify_one_async(
     education: str, qualification_summary: str, semaphore: asyncio.Semaphore
 ) -> EducationClassification:
     async with semaphore:
         user_msg = build_prompt(education, qualification_summary)
-        resp = await acompletion(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_msg},
-            ],
-            response_format=EducationClassification,
-        )
-        return EducationClassification.model_validate_json(
-            resp.choices[0].message.content
-        )
+        for attempt in range(MAX_RETRIES):
+            try:
+                resp = await acompletion(
+                    model=MODEL,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": user_msg},
+                    ],
+                    response_format=EducationClassification,
+                    temperature=0,
+                )
+                return EducationClassification.model_validate_json(
+                    resp.choices[0].message.content
+                )
+            except Exception as e:
+                if attempt == MAX_RETRIES - 1 or not _is_retryable(e):
+                    raise
+                # Exponential backoff with jitter, capped at 60s.
+                delay = min(60, (2 ** attempt) + random.random())
+                await asyncio.sleep(delay)
+        # unreachable
+        raise RuntimeError("retry loop exited without returning or raising")
 
 
 def verify_quotes(df: pd.DataFrame) -> pd.DataFrame:

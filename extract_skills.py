@@ -14,6 +14,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import random
 from pathlib import Path
 
 import pandas as pd
@@ -30,7 +31,8 @@ OUTPUT = DATA_DIR / "2210_skills.json"
 CACHE_FILE = DATA_DIR / "skills_cache.json"
 
 MODEL = "openai/gpt-5.4-mini"
-MAX_CONCURRENT = 20
+MAX_CONCURRENT = 5
+MAX_RETRIES = 5
 
 
 class GradeSkills(BaseModel):
@@ -97,17 +99,39 @@ def save_cache(cache: dict):
     CACHE_FILE.write_text(json.dumps(cache, indent=2))
 
 
+def _is_retryable(exc: Exception) -> bool:
+    s = str(exc).lower()
+    billing_markers = (
+        "insufficient_quota",
+        "insufficient quota",
+        "exceeded your current quota",
+        "check your plan and billing",
+    )
+    if any(m in s for m in billing_markers):
+        return False
+    return any(k in s for k in ("rate", "429", "timeout", "timed out", "connection", "overloaded"))
+
+
 async def extract_one(row: pd.Series, semaphore: asyncio.Semaphore) -> SkillsExtraction:
     async with semaphore:
-        resp = await acompletion(
-            model=MODEL,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": build_prompt(row)},
-            ],
-            response_format=SkillsExtraction,
-        )
-        return SkillsExtraction.model_validate_json(resp.choices[0].message.content)
+        for attempt in range(MAX_RETRIES):
+            try:
+                resp = await acompletion(
+                    model=MODEL,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": build_prompt(row)},
+                    ],
+                    response_format=SkillsExtraction,
+                    temperature=0,
+                )
+                return SkillsExtraction.model_validate_json(resp.choices[0].message.content)
+            except Exception as e:
+                if attempt == MAX_RETRIES - 1 or not _is_retryable(e):
+                    raise
+                delay = min(60, (2 ** attempt) + random.random())
+                await asyncio.sleep(delay)
+        raise RuntimeError("retry loop exited without returning or raising")
 
 
 async def run_extraction(df: pd.DataFrame, cache: dict) -> list[dict]:
