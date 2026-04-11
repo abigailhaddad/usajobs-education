@@ -39,11 +39,19 @@ UA = (
     "+https://github.com/abigailhaddad/usajobs-education)"
 )
 
-# Match an <h3>NAME</h3> and capture everything up to the next h2 or h3.
-# The announcement page lays Education and Qualifications out as sibling
-# h3s under the "Requirements" h2, so this is reliable.
+# Match an <h3>Education</h3> or <h3>Qualifications</h3> and capture
+# everything up to the next h2 OR to the next h3 whose name is one of the
+# known sibling section headers under the "Requirements" h2. Terminating on
+# *any* h3 is unsafe because some announcements embed inner h3 sub-headings
+# inside the Qualifications body (e.g. "<h3>Definitions</h3>") — truncating
+# at those would drop most of the section body.
+_NEXT_SECTION = (
+    r"(?:Conditions of employment|Qualifications|Education|Additional information)"
+)
 SECTION_RE = re.compile(
-    r"<h3[^>]*>\s*(?P<name>[^<]+?)\s*</h3>(?P<body>.*?)(?=<h[23]\b)",
+    r"<h3[^>]*>\s*(?P<name>Education|Qualifications)\s*</h3>"
+    r"(?P<body>.*?)"
+    r"(?=<h2\b|<h3[^>]*>\s*" + _NEXT_SECTION + r"\s*</h3>)",
     re.S | re.I,
 )
 

@@ -48,10 +48,12 @@ jobs:
           path: data/2210_historical_raw.parquet
           # Unique key so each run writes a fresh cache entry; the
           # prefix restore-keys lets us pull the newest prior run's
-          # parquet as a starting point.
-          key: 2210-historical-${{ github.run_id }}
+          # parquet as a starting point. The -v2- prefix was bumped
+          # from -v1- after a scraper regex bug fix so we do not
+          # resume from pre-fix parquets.
+          key: 2210-historical-v2-${{ github.run_id }}
           restore-keys: |
-            2210-historical-
+            2210-historical-v2-
 
       - name: Scrape historical 2210
         run: |
