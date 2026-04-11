@@ -54,9 +54,9 @@ def fetch(url: str, timeout: int = 30) -> bytes:
         return resp.read()
 
 
-def load_historical_2210() -> pd.DataFrame:
+def load_historical_2210(years: tuple[int, ...]) -> pd.DataFrame:
     frames = []
-    for year in (2024, 2025, 2026):
+    for year in years:
         print(f"  downloading historical_jobs_{year}.parquet")
         raw = fetch(f"{R2_BASE}/historical_jobs_{year}.parquet")
         df = pd.read_parquet(io.BytesIO(raw))
@@ -132,14 +132,20 @@ def main():
     parser.add_argument("--checkpoint-every", type=int, default=100,
                         help="Write parquet every N successful scrapes")
     parser.add_argument("--timeout", type=int, default=30)
+    parser.add_argument("--years", type=str, default="2023,2024,2025,2026",
+                        help="Comma-separated historical_jobs years to pull (default 2023-2026)")
     args = parser.parse_args()
+    years = tuple(int(y.strip()) for y in args.years.split(",") if y.strip())
 
     DATA_DIR.mkdir(exist_ok=True)
 
-    print("Loading historical 2210 metadata from R2...")
-    hist = load_historical_2210()
+    print(f"Loading historical 2210 metadata from R2 for years: {years}")
+    hist = load_historical_2210(years)
     hist["cn"] = hist["usajobsControlNumber"].astype(str)
-    print(f"  {len(hist)} historical 2210 rows")
+    # A job that opened late in one year and closed in the next appears in
+    # both year parquets — keep the earliest source_year for determinism.
+    hist = hist.sort_values("source_year").drop_duplicates("cn", keep="first")
+    print(f"  {len(hist)} unique historical 2210 rows")
 
     skip_cns: set[str] = set()
     if CURRENT_RAW.exists():

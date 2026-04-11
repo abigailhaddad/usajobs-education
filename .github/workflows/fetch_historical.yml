@@ -13,13 +13,17 @@ on:
   workflow_dispatch:
     inputs:
       limit:
-        description: 'Max new jobs to scrape (blank = all ~17k)'
+        description: 'Max new jobs to scrape (blank = all)'
         required: false
         default: ''
       delay:
         description: 'Seconds between requests'
         required: false
         default: '0.5'
+      years:
+        description: 'Comma-separated historical_jobs years'
+        required: false
+        default: '2023,2024,2025,2026'
 
 jobs:
   fetch:
@@ -52,7 +56,7 @@ jobs:
       - name: Scrape historical 2210
         run: |
           set -euo pipefail
-          args="--delay ${{ inputs.delay || '0.5' }}"
+          args="--delay ${{ inputs.delay || '0.5' }} --years ${{ inputs.years || '2023,2024,2025,2026' }}"
           if [ -n "${{ inputs.limit }}" ]; then
             args="$args --limit ${{ inputs.limit }}"
           fi
