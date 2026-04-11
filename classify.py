@@ -240,9 +240,17 @@ def verify_quotes(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(bad) if bad else pd.DataFrame()
 
 
-async def run_classification(df: pd.DataFrame, cache: dict) -> list[dict]:
+async def run_classification(df: pd.DataFrame, cache: dict) -> tuple[list[dict], list[int]]:
+    """Returns (results, failed_indices).
+
+    results[i] is a dict for every successfully classified row and None for
+    rows that exhausted their retries. failed_indices lists those None slots
+    so the caller can drop them from the output parquet. Failed rows are
+    NOT cached — a subsequent run retries them from scratch.
+    """
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
-    results = [None] * len(df)
+    results: list[dict | None] = [None] * len(df)
+    failed_indices: list[int] = []
     cached_count = 0
     api_count = 0
 
@@ -264,7 +272,7 @@ async def run_classification(df: pd.DataFrame, cache: dict) -> list[dict]:
     print(f"  {cached_count} cached, {len(uncached_indices)} need API calls")
 
     if not uncached_indices:
-        return results
+        return results, failed_indices
 
     # Process uncached in parallel with progress bar
     rows_list = list(df.iterrows())
@@ -281,11 +289,11 @@ async def run_classification(df: pd.DataFrame, cache: dict) -> list[dict]:
             )
         except Exception as e:
             tqdm.write(f"  ERROR {row['usajobs_control_number']}: {e}")
-            result = EducationClassification(
-                category=EducationCategory.no_education,
-                reasoning=f"API error: {e}",
-                key_quote="(no relevant text)",
-            )
+            failed_indices.append(idx)
+            api_count += 1
+            api_since_save += 1
+            pbar.update(1)
+            return
 
         key = get_cache_key(row["education"], row["qualification_summary"])
         cache[key] = result.model_dump()
@@ -312,9 +320,9 @@ async def run_classification(df: pd.DataFrame, cache: dict) -> list[dict]:
 
     pbar.close()
     save_cache(cache)
-    print(f"  Final cache save ({cached_count} cached, {api_count} API calls)")
+    print(f"  Final cache save ({cached_count} cached, {api_count} API calls, {len(failed_indices)} failed)")
 
-    return results
+    return results, failed_indices
 
 
 def main():
@@ -363,7 +371,16 @@ def main():
         return
 
     cache = load_cache()
-    results = asyncio.run(run_classification(df, cache))
+    results, failed_indices = asyncio.run(run_classification(df, cache))
+
+    # Drop rows that failed after all retries so we never write a row with
+    # a bogus "no_education / API error" label. Re-running picks them up.
+    if failed_indices:
+        print(f"\n{len(failed_indices)} rows failed after {MAX_RETRIES} retries — "
+              f"dropping from output. Re-run to retry them.")
+        keep_mask = [i not in set(failed_indices) for i in range(len(df))]
+        df = df.iloc[keep_mask].reset_index(drop=True)
+        results = [r for i, r in enumerate(results) if keep_mask[i]]
 
     result_df = pd.DataFrame(results)
     out = pd.concat([df.reset_index(drop=True), result_df], axis=1)

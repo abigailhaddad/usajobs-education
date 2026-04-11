@@ -207,9 +207,17 @@ async def verify_one(row: pd.Series, semaphore: asyncio.Semaphore) -> Verificati
         raise RuntimeError("retry loop exited without returning or raising")
 
 
-async def run_verification(to_verify: pd.DataFrame, cache: dict) -> list[dict]:
+async def run_verification(to_verify: pd.DataFrame, cache: dict) -> tuple[list[dict | None], list[int]]:
+    """Returns (results, failed_positions).
+
+    failed_positions is a list of indices INTO results/to_verify (0..N-1)
+    for rows that exhausted their retries. These rows are NOT cached and
+    will be retried on a subsequent run. results[i] is None for those
+    slots, so the caller must skip them when applying corrections.
+    """
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
-    results = [None] * len(to_verify)
+    results: list[dict | None] = [None] * len(to_verify)
+    failed_positions: list[int] = []
     cached_count = 0
     uncached_indices = []
 
@@ -225,7 +233,7 @@ async def run_verification(to_verify: pd.DataFrame, cache: dict) -> list[dict]:
     print(f"  {cached_count} cached, {len(uncached_indices)} need API calls")
 
     if not uncached_indices:
-        return results
+        return results, failed_positions
 
     pbar = tqdm(total=len(uncached_indices), desc="Verifying", unit="job")
     api_since_save = 0
@@ -238,12 +246,10 @@ async def run_verification(to_verify: pd.DataFrame, cache: dict) -> list[dict]:
             result_dict = result.model_dump()
         except Exception as e:
             tqdm.write(f"  ERROR {row['usajobs_control_number']}: {e}")
-            result_dict = {
-                "original_correct": True,
-                "corrected_category": row["edu_category"],
-                "reasoning": f"Verification error: {e}",
-                "key_quote": "(no relevant text)",
-            }
+            failed_positions.append(idx)
+            api_since_save += 1
+            pbar.update(1)
+            return
 
         key = get_verify_cache_key(row)
         cache[key] = result_dict
@@ -262,7 +268,7 @@ async def run_verification(to_verify: pd.DataFrame, cache: dict) -> list[dict]:
 
     pbar.close()
     save_verify_cache(cache)
-    return results
+    return results, failed_positions
 
 
 def main():
@@ -293,12 +299,20 @@ def main():
         return
 
     cache = load_verify_cache()
-    results = asyncio.run(run_verification(to_verify, cache))
+    results, failed_positions = asyncio.run(run_verification(to_verify, cache))
 
-    # Apply corrections
+    if failed_positions:
+        print(f"\n{len(failed_positions)} verifications failed after {MAX_RETRIES} "
+              f"retries — those rows keep their first-pass label and remain "
+              f"unverified. Re-run verify.py to retry them.")
+
+    # Apply corrections — skip rows where verification failed (result is None)
     corrections = 0
+    failed_set = set(failed_positions)
     verify_indices = to_verify.index.tolist()
     for i, result in enumerate(results):
+        if i in failed_set or result is None:
+            continue
         idx = verify_indices[i]
         if not result["original_correct"]:
             old = df.loc[idx, "edu_category"]

@@ -134,9 +134,15 @@ async def extract_one(row: pd.Series, semaphore: asyncio.Semaphore) -> SkillsExt
         raise RuntimeError("retry loop exited without returning or raising")
 
 
-async def run_extraction(df: pd.DataFrame, cache: dict) -> list[dict]:
+async def run_extraction(df: pd.DataFrame, cache: dict) -> tuple[list[dict | None], list[int]]:
+    """Returns (results, failed_indices).
+
+    Failed rows are NOT cached and their slot in results stays None.
+    Caller drops them from the output JSON so a re-run retries cleanly.
+    """
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
-    results = [None] * len(df)
+    results: list[dict | None] = [None] * len(df)
+    failed_indices: list[int] = []
     cached_count = 0
     uncached_indices = []
 
@@ -152,7 +158,7 @@ async def run_extraction(df: pd.DataFrame, cache: dict) -> list[dict]:
     print(f"  {cached_count} cached, {len(uncached_indices)} need API calls")
 
     if not uncached_indices:
-        return results
+        return results, failed_indices
 
     pbar = tqdm(total=len(uncached_indices), desc="Extracting skills", unit="job")
     api_since_save = 0
@@ -165,14 +171,10 @@ async def run_extraction(df: pd.DataFrame, cache: dict) -> list[dict]:
             result_dict = result.model_dump()
         except Exception as e:
             tqdm.write(f"  ERROR {row['usajobs_control_number']}: {e}")
-            result_dict = {
-                "specialization": "UNKNOWN",
-                "technical_skills": [],
-                "skill_areas": [],
-                "by_grade": [],
-                "certifications_mentioned": [],
-                "clearance_level": "Not specified",
-            }
+            failed_indices.append(idx)
+            api_since_save += 1
+            pbar.update(1)
+            return
 
         key = get_cache_key(row)
         cache[key] = result_dict
@@ -192,7 +194,7 @@ async def run_extraction(df: pd.DataFrame, cache: dict) -> list[dict]:
 
     pbar.close()
     save_cache(cache)
-    return results
+    return results, failed_indices
 
 
 def main():
@@ -210,11 +212,18 @@ def main():
         print(f"Sampled {len(df)} jobs")
 
     cache = load_cache()
-    results = asyncio.run(run_extraction(df, cache))
+    results, failed_indices = asyncio.run(run_extraction(df, cache))
 
-    # Combine with job metadata
+    if failed_indices:
+        print(f"\n{len(failed_indices)} extractions failed after {MAX_RETRIES} "
+              f"retries — dropping from output. Re-run to retry them.")
+
+    # Combine with job metadata — skip rows where extraction failed.
+    failed_set = set(failed_indices)
     output = []
     for i, (_, row) in enumerate(df.iterrows()):
+        if i in failed_set or results[i] is None:
+            continue
         entry = {
             "usajobs_control_number": row["usajobs_control_number"],
             "usajobs_url": row["usajobs_url"],
