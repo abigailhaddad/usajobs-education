@@ -27,6 +27,7 @@ load_dotenv()
 
 DATA_DIR = Path(__file__).parent / "data"
 INPUT = DATA_DIR / "2210_raw.parquet"
+HISTORICAL_INPUT = DATA_DIR / "2210_historical_raw.parquet"
 OUTPUT = DATA_DIR / "2210_classified.parquet"
 CACHE_FILE = DATA_DIR / "classification_cache.json"
 
@@ -261,7 +262,18 @@ def main():
         return
 
     df = pd.read_parquet(INPUT)
-    print(f"Loaded {len(df)} jobs from {INPUT}")
+    df["data_source"] = "api"
+    print(f"Loaded {len(df)} jobs from {INPUT.name}")
+    if HISTORICAL_INPUT.exists():
+        hist = pd.read_parquet(HISTORICAL_INPUT)
+        hist["data_source"] = "scraped"
+        # Historical scrape excludes CNs already in 2210_raw, but enforce
+        # here too so re-running with partial state stays safe.
+        api_cns = set(df["usajobs_control_number"].astype(str))
+        hist = hist[~hist["usajobs_control_number"].astype(str).isin(api_cns)]
+        df = pd.concat([df, hist], ignore_index=True)
+        print(f"  +{len(hist)} historical scraped rows from {HISTORICAL_INPUT.name}")
+        print(f"  total: {len(df)} jobs")
 
     if args.sample:
         df = df.sample(args.sample, random_state=42)
