@@ -35,6 +35,10 @@ VERIFY_CACHE = DATA_DIR / "verification_cache.json"
 VERIFY_MODEL = "openai/gpt-5.4"
 MAX_CONCURRENT = 10
 
+# Bump whenever the verify prompt or category set changes — cache entries
+# are keyed against this so stale verifications don't get returned.
+PROMPT_VERSION = "v2-2026-04-11-education-substitutable"
+
 # Regex patterns that flag a no_education classification for review
 SUSPICIOUS_PATTERNS = [
     r'(?i)\bmandatory\b.{0,50}(degree|bachelor|education)',
@@ -53,7 +57,7 @@ class VerificationResult(BaseModel):
         description="True if the original classification is correct, False if it should be changed"
     )
     corrected_category: str = Field(
-        description="The correct category. Must be one of: no_education, education_required, education_required_higher, not_a_posting"
+        description="The correct category. Must be one of: no_education, education_substitutable, education_required, education_required_higher, not_a_posting"
     )
     reasoning: str = Field(
         description="Brief explanation of why the original was correct or what was wrong"
@@ -67,18 +71,33 @@ VERIFY_PROMPT = """You are reviewing a classification of a federal 2210 IT Speci
 
 A first-pass model classified this posting. Your job is to verify whether the classification is correct.
 
-The categories are:
-- no_education: No grade level requires a degree. This includes: education can substitute for experience (not a requirement), education preferred/desired, empty/boilerplate education fields, high school diploma only, OPM Alternative A (experience OR education).
+The categories (mutually exclusive) are:
+
+- no_education: Education is NOT a qualifying path at any grade. You MUST have experience — a degree alone will not get you in. Includes: postings that explicitly say "no substitution of education for experience", postings where the Education field is empty or only has transcript/boilerplate text, postings where only experience is described as a way to qualify, postings that only mention a high school diploma.
+
+- education_substitutable: Education is NOT mandatory at any grade, but the posting explicitly offers education as ONE way to qualify — alongside experience. A candidate with the right degree and no experience CAN qualify because the posting allows education to substitute for experience (at some or all grades). This is the shape of most 2210 postings that reference OPM Alternative A: "you may qualify with IT-related experience OR a 4-year degree in computer science, information science, information systems management, mathematics, statistics, operations research, or engineering."
+
 - education_required: A degree (bachelor's or higher) is required at ALL grade levels with no experience-only alternative.
-- education_required_higher: A degree is required at higher grade levels but not lower ones — AND there is no experience-only path at those higher grades.
+
+- education_required_higher: A degree is required at higher grade levels (with no experience alternative at those grades), but NOT at the lowest grade level.
+
 - not_a_posting: Not a real job posting (DHA notice, resume collection, placeholder).
 
 CRITICAL DISTINCTIONS:
-- "Education is not substitutable for experience" means you CANNOT use a degree — experience is required. This is no_education, NOT education_required.
-- "If you are using Education to qualify..." or "to qualify by education alone..." means education is OPTIONAL. This is no_education.
-- "Ph.D. or 3 full years of graduate education" at a grade level is an education SUBSTITUTION option, not a requirement. This is no_education.
-- "Positive education requirement" in the 2210 series usually refers to OPM Alternative A, which allows experience OR education. This is typically no_education.
-- A degree is only "required" if the posting makes clear you CANNOT qualify without it at some grade level.
+
+1. no_education vs education_substitutable — does the posting offer education as a qualifying PATH?
+   - "If you are using Education to qualify..." / "to qualify by education alone..." → education_substitutable (education IS being offered as an alternative)
+   - "Ph.D. or 3 full years of graduate education to qualify by education alone" → education_substitutable (the phrase explicitly means education alone is sufficient)
+   - "Education is not substitutable for experience" at every grade → no_education (degree does not help)
+   - Empty / boilerplate Education field with no education path in the qual summary → no_education
+   - HS diploma only → no_education
+
+2. education_substitutable vs education_required — is the degree MANDATORY?
+   - "You may qualify with [experience] OR [degree]" → education_substitutable
+   - "You MUST have a bachelor's degree..." with no experience-only path → education_required
+   - "Positive education requirement" in 2210 context is ambiguous — it often refers to the OPM Alternative A standard that ALLOWS experience or education. Check whether the posting forecloses the experience path entirely before calling it education_required.
+
+3. A degree is only "required" if the posting makes clear you CANNOT qualify without it at some grade level.
 
 The first-pass classification was: {original_category}
 The first-pass reasoning was: {original_reasoning}
@@ -117,7 +136,9 @@ Qualifications Summary:
 
 def get_verify_cache_key(row: pd.Series) -> str:
     combined = (
-        (str(row["education"]) if pd.notna(row["education"]) else "")
+        PROMPT_VERSION
+        + "|"
+        + (str(row["education"]) if pd.notna(row["education"]) else "")
         + "|"
         + (str(row["qualification_summary"]) if pd.notna(row["qualification_summary"]) else "")
         + "|"
