@@ -1,23 +1,28 @@
-"""Shared async LLM batch runner with retry, caching, and progress.
-
-All three pipeline scripts (classify, verify, extract_skills) delegate
-their API calls through this module so retry logic, caching, concurrency
-limits, and error handling are defined exactly once.
+"""Shared LLM runner with retry, caching, real-time and batch modes.
 
 Settings come from config.yaml (loaded once at import time).
+
+Two execution modes:
+- run_batch(): real-time async calls with concurrency control
+- submit_batch() / poll_batch() / collect_batch(): OpenAI Batch API
+  for 50% cost savings (results within 24h)
 """
 
 import asyncio
 import hashlib
 import json
 import random
+import time
 from pathlib import Path
 from typing import Any, Callable, TypeVar
 
 import yaml
+from dotenv import load_dotenv
 from litellm import acompletion
 from pydantic import BaseModel
 from tqdm import tqdm
+
+load_dotenv()
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -165,4 +170,179 @@ async def run_batch(
     n_ok = len(uncached_indices) - len(failed_indices)
     print(f"  Done ({cached_count} cached, {n_ok} API OK, {len(failed_indices)} failed)")
 
+    return results, failed_indices
+
+
+# ---------------------------------------------------------------------------
+# OpenAI Batch API (50% off, async processing)
+# ---------------------------------------------------------------------------
+
+def _get_openai_client():
+    import openai
+    return openai.Client()
+
+
+def submit_batch(
+    items: list,
+    messages_fn: Callable,      # (item) -> list[dict] (messages array)
+    cache: dict,
+    cache_key_fn: Callable,     # (item) -> str
+    model: str,
+    response_format_schema: dict,   # JSON schema for structured output
+    batch_dir: Path,
+) -> tuple[str | None, list[int], list[int]]:
+    """Write a JSONL of uncached requests, upload to OpenAI Batch API.
+
+    Returns (batch_id, uncached_indices, cached_indices).
+    batch_id is None if everything was cached.
+    """
+    batch_dir.mkdir(parents=True, exist_ok=True)
+    uncached = []
+    cached_indices = []
+
+    for i, item in enumerate(items):
+        key = cache_key_fn(item)
+        if key in cache:
+            cached_indices.append(i)
+        else:
+            uncached.append(i)
+
+    print(f"  {len(cached_indices)} cached, {len(uncached)} need API calls")
+
+    if not uncached:
+        return None, uncached, cached_indices
+
+    # Strip "openai/" prefix if present (batch API wants raw model name)
+    raw_model = model.removeprefix("openai/")
+
+    # Write JSONL
+    jsonl_path = batch_dir / "batch_input.jsonl"
+    with open(jsonl_path, "w") as f:
+        for idx in uncached:
+            request = {
+                "custom_id": str(idx),
+                "method": "POST",
+                "url": "/v1/chat/completions",
+                "body": {
+                    "model": raw_model,
+                    "messages": messages_fn(items[idx]),
+                    "response_format": {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": "response",
+                            "strict": True,
+                            "schema": response_format_schema,
+                        },
+                    },
+                },
+            }
+            f.write(json.dumps(request) + "\n")
+
+    print(f"  Wrote {len(uncached)} requests to {jsonl_path}")
+
+    # Upload and create batch
+    client = _get_openai_client()
+    with open(jsonl_path, "rb") as f:
+        uploaded = client.files.create(file=f, purpose="batch")
+    print(f"  Uploaded file: {uploaded.id}")
+
+    batch = client.batches.create(
+        input_file_id=uploaded.id,
+        endpoint="/v1/chat/completions",
+        completion_window="24h",
+    )
+    print(f"  Batch created: {batch.id}  status={batch.status}")
+
+    # Save batch metadata for resume
+    meta = {
+        "batch_id": batch.id,
+        "file_id": uploaded.id,
+        "n_requests": len(uncached),
+        "uncached_indices": uncached,
+    }
+    (batch_dir / "batch_meta.json").write_text(json.dumps(meta, indent=2))
+
+    return batch.id, uncached, cached_indices
+
+
+def poll_batch(batch_id: str, interval: int = 30, timeout: int = 86400) -> dict:
+    """Poll until batch completes. Returns the batch object as a dict."""
+    client = _get_openai_client()
+    start = time.time()
+    while True:
+        batch = client.batches.retrieve(batch_id)
+        status = batch.status
+        completed = batch.request_counts.completed if batch.request_counts else 0
+        total = batch.request_counts.total if batch.request_counts else 0
+        print(f"  Batch {batch_id}: {status}  ({completed}/{total} done)", end="\r")
+
+        if status in ("completed", "failed", "cancelled", "expired"):
+            print()
+            return batch.model_dump()
+
+        if time.time() - start > timeout:
+            print()
+            raise TimeoutError(f"Batch {batch_id} did not complete within {timeout}s")
+
+        time.sleep(interval)
+
+
+def collect_batch(
+    batch_result: dict,
+    items: list,
+    uncached_indices: list[int],
+    cached_indices: list[int],
+    cache: dict,
+    cache_key_fn: Callable,
+    cache_path: Path,
+    parse_fn: Callable,     # (response_content: str) -> dict
+) -> tuple[list[dict | None], list[int]]:
+    """Download batch results, parse, update cache.
+
+    Returns (results, failed_indices) same shape as run_batch().
+    """
+    results: list[dict | None] = [None] * len(items)
+    failed_indices: list[int] = []
+
+    # Fill in cached results
+    for i in cached_indices:
+        key = cache_key_fn(items[i])
+        results[i] = cache[key]
+
+    if batch_result["status"] != "completed":
+        print(f"  Batch status: {batch_result['status']} — not collecting results")
+        failed_indices = list(uncached_indices)
+        return results, failed_indices
+
+    # Download output file
+    client = _get_openai_client()
+    output_file_id = batch_result["output_file_id"]
+    content = client.files.content(output_file_id).text
+
+    parsed = 0
+    errors = 0
+    for line in content.strip().split("\n"):
+        row = json.loads(line)
+        idx = int(row["custom_id"])
+        resp = row.get("response", {})
+
+        if resp.get("status_code") != 200:
+            errors += 1
+            failed_indices.append(idx)
+            continue
+
+        try:
+            body = resp["body"]
+            msg_content = body["choices"][0]["message"]["content"]
+            result = parse_fn(msg_content)
+            results[idx] = result
+            key = cache_key_fn(items[idx])
+            cache[key] = result
+            parsed += 1
+        except Exception as e:
+            errors += 1
+            failed_indices.append(idx)
+
+    save_cache(cache, cache_path)
+    print(f"  Collected: {parsed} OK, {errors} failed, {len(cached_indices)} cached")
     return results, failed_indices

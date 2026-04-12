@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import asyncio
+import json
 from enum import Enum
 from pathlib import Path
 
@@ -18,7 +19,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
-from llm_batch import CONFIG, call_llm, cache_key, load_cache, save_cache, run_batch
+from llm_batch import (
+    CONFIG, call_llm, cache_key, load_cache, save_cache, run_batch,
+    submit_batch as _submit_batch, poll_batch, collect_batch,
+)
 
 load_dotenv()
 
@@ -113,6 +117,53 @@ def verify_quotes(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(bad) if bad else pd.DataFrame()
 
 
+# ── Batch API helpers ─────────────────────────────────────────────────────
+
+BATCH_DIR = DATA_DIR / "batch"
+
+
+def _make_messages(item: dict) -> list[dict]:
+    return [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_prompt(
+            item.get("education", ""),
+            item.get("qualification_summary", ""),
+        )},
+    ]
+
+
+def _response_format_schema() -> dict:
+    """JSON schema for EducationClassification that the Batch API needs.
+    OpenAI structured outputs require additionalProperties: false."""
+    schema = EducationClassification.model_json_schema()
+    schema["additionalProperties"] = False
+    # Inline $defs (OpenAI doesn't support $ref in batch mode)
+    if "$defs" in schema:
+        for prop in schema.get("properties", {}).values():
+            if "$ref" in prop:
+                ref_name = prop["$ref"].split("/")[-1]
+                prop.clear()
+                prop.update(schema["$defs"][ref_name])
+            if "allOf" in prop:
+                for item in prop["allOf"]:
+                    if "$ref" in item:
+                        ref_name = item["$ref"].split("/")[-1]
+                        prop.clear()
+                        prop.update(schema["$defs"][ref_name])
+                        break
+        del schema["$defs"]
+    return schema
+
+
+def _parse_batch_response(content: str) -> dict:
+    result = EducationClassification.model_validate_json(content)
+    return {
+        "edu_category": result.category.value,
+        "edu_reasoning": result.reasoning,
+        "edu_key_quote": result.key_quote,
+    }
+
+
 # ── Main ──────────────────────────────────────────────────────────────────
 
 def main():
@@ -120,6 +171,11 @@ def main():
     parser.add_argument("--sample", type=int, help="Classify a random sample of N jobs")
     parser.add_argument("--dry-run", action="store_true", help="Show prompts without calling API")
     parser.add_argument("--verify", action="store_true", help="Verify quotes in existing output")
+    parser.add_argument("--batch", action="store_true",
+                        help="Submit to OpenAI Batch API (50%% off, async). "
+                             "Run --collect later to get results.")
+    parser.add_argument("--collect", type=str, metavar="BATCH_ID",
+                        help="Collect results from a submitted batch")
     args = parser.parse_args()
 
     if args.verify:
@@ -165,6 +221,45 @@ def main():
 
     items = df.to_dict(orient="records")
     cache = load_cache(CACHE_FILE)
+
+    # ── Batch API mode ────────────────────────────────────────────────
+    if args.batch:
+        batch_id, uncached, cached = _submit_batch(
+            items=items,
+            messages_fn=_make_messages,
+            cache=cache,
+            cache_key_fn=make_cache_key,
+            model=MODEL,
+            response_format_schema=_response_format_schema(),
+            batch_dir=BATCH_DIR,
+        )
+        if batch_id:
+            print(f"\nBatch submitted: {batch_id}")
+            print(f"Run this to collect results when done:")
+            print(f"  python classify.py --collect {batch_id}")
+        else:
+            print("\nAll items cached — nothing to submit.")
+        return
+
+    if args.collect:
+        print(f"Polling batch {args.collect}...")
+        batch_result = poll_batch(args.collect)
+        meta = json.loads((BATCH_DIR / "batch_meta.json").read_text())
+        results, failed = collect_batch(
+            batch_result=batch_result,
+            items=items,
+            uncached_indices=meta["uncached_indices"],
+            cached_indices=[i for i in range(len(items))
+                           if i not in set(meta["uncached_indices"])],
+            cache=cache,
+            cache_key_fn=make_cache_key,
+            cache_path=CACHE_FILE,
+            parse_fn=_parse_batch_response,
+        )
+        _write_output(df, results, failed)
+        return
+
+    # ── Real-time mode ────────────────────────────────────────────────
     results, failed = asyncio.run(run_batch(
         items=items,
         process_fn=classify_one,
@@ -173,7 +268,10 @@ def main():
         cache_path=CACHE_FILE,
         desc="Classifying",
     ))
+    _write_output(df, results, failed)
 
+
+def _write_output(df, results, failed):
     if failed:
         print(f"\n{len(failed)} rows failed — dropping from output. Re-run to retry.")
         keep = [i not in set(failed) for i in range(len(df))]
