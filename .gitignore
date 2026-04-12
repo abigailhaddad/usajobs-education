@@ -7,3 +7,4 @@ data/usajobs_html_cache/
 .claude/
 .netlify/
 .DS_Store
+data/batch/
