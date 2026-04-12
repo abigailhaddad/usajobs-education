@@ -5,96 +5,79 @@ Project context for Claude Code sessions in this repo.
 ## What this is
 
 Analysis of whether federal 2210 (IT Specialist) job postings require a
-degree. ~99% do not. Results live in `site/data.json` and are rendered by
+degree. Results live in `site/data.json` and are rendered by
 `site/index.html` on Netlify.
 
-## Pipeline (source of truth is README.md — this file is for gotchas)
+## Architecture
 
 ```
-fetch_data.py       → data/2210_raw.parquet              (current_jobs from R2)
-fetch_historical.py → data/2210_historical_raw.parquet   (scraped USAJobs pages)
-classify.py         → data/2210_classified.parquet       (gpt-5.4-mini, first pass)
-verify.py           → data/2210_verified.parquet         (gpt-5.4, second pass on flagged)
-extract_skills.py   → data/2210_skills.json              (gpt-5.4-mini, skills/certs/spec)
-                       → copied by hand to site/data.json
+config.yaml         ← models, prompts, concurrency, retries (single source of truth)
+llm_batch.py        ← shared async LLM runner: retry w/ backoff, caching, batching
+classify.py         ← thin wrapper: education category classification
+verify.py           ← thin wrapper: second-pass verification on flagged rows
+extract_skills.py   ← thin wrapper: skills/certs/specialization extraction
+fetch_data.py       ← pulls current_jobs from R2 → data/2210_raw.parquet
+fetch_historical.py ← scrapes USAJobs pages → data/2210_historical_raw.parquet
+test_classify.py    ← 22 hand-labeled test cases across all 4 categories
 ```
 
-`data/*.parquet` and `data/*.json` are gitignored — everything in `data/` is
-local-only and has to be regenerated.
+## Categories (4, mutually exclusive)
+
+- `no_education` — education is not a qualifying path at any grade
+- `education_substitutable` — education is one way to qualify but not mandatory
+- `education_required` — degree is mandatory, no experience-only alternative
+- `not_a_posting` — DHA notice / placeholder
+
+Key distinction: "no substitution of education at GS-12" means education
+DOES NOT HELP at that grade (no_education or education_substitutable if
+other grades accept education). It does NOT mean education is required.
 
 ## Two data sources, one pipeline
 
 Current-cycle postings come from the USAJobs API (`current_jobs_*.parquet` on
-R2), which directly supplies `UserArea.Details.Education` and
-`QualificationSummary` fields. Older postings that have rolled out of
-`current_jobs` are backfilled by `fetch_historical.py`, which scrapes each
-`https://www.usajobs.gov/job/{control_number}` page and regex-extracts the
-Education and Qualifications `<h3>` sections.
+R2), which directly supplies Education and QualificationSummary fields.
+Older postings are backfilled by `fetch_historical.py`, which scrapes each
+announcement page and regex-extracts the `<h3>Education</h3>` and
+`<h3>Qualifications</h3>` sections.
 
 `classify.py` merges both sources at its input load step and tags each row
 with a `data_source` column (`"api"` vs `"scraped"`). This column rides
-through `verify.py` (transparent passthrough) and `extract_skills.py`
-(explicit field in the output dict) into `site/data.json`.
+through the pipeline into `site/data.json`.
 
-### Why regex-on-HTML is safe
+## Config and caches
 
-Before building the scraper, `validate_scrape.py` diffed 20 overlap jobs
-(present in both `historical_jobs` and the current API) against API ground
-truth. Qualifications matched verbatim; Education matched modulo whitespace
-or captured the "This job does not have an education qualification
-requirement" placeholder that the API had dropped to empty string. The
-scraper's `html_to_text` output is the same plain-text shape the API
-returns, so the `classify.py` prompt works unchanged on both.
+All LLM settings (model, prompt, concurrency, retries) live in `config.yaml`.
+Each prompt has a `prompt_version` string that's folded into cache keys, so
+bumping the version invalidates old cached classifications without deleting
+the cache file.
 
-If the USAJobs page structure changes and regex starts failing, the fallback
-plan is to send the full announcement text (not HTML) to the LLM and
-re-validate against the overlap set — but we have not needed this.
+Cache files in `data/`:
+- `classification_cache.json` — keyed on `prompt_version + education + qualification_summary`
+- `verification_cache.json` — keyed on `prompt_version + education + qualification_summary + edu_category`
+- `skills_cache.json` — keyed on `position_title + qualification_summary`
 
 ## GitHub Actions
 
 `.github/workflows/fetch_historical.yml` — manual `workflow_dispatch` with
-`limit` and `delay` inputs. Scrapes ~17k historical 2210 jobs in a single
-run (~2.5h at 0.5s delay; under the 6h job cap). Resume semantics:
-`actions/cache` restores the partial parquet from the newest prior run via
-`restore-keys`, and the artifact upload uses `if: always()` so even a
-failed/timed-out run publishes its partial output. Output is a 90-day
-workflow artifact named `2210_historical_raw`.
-
-No GitHub Actions run of `classify.py`/`verify.py`/`extract_skills.py`
-exists — those still run locally because they need `OPENAI_API_KEY`.
-
-## Caches
-
-All three LLM scripts cache responses keyed on input text content:
-
-- `data/classification_cache.json` — SHA256 of `education + "|" + qualification_summary`
-- `data/verification_cache.json` — SHA256 of `education + "|" + qualification_summary + "|" + edu_category`
-- `data/skills_cache.json` — SHA256 of `position_title + "|" + qualification_summary`
-
-**This means adding historical data to the pipeline only burns API calls for
-the genuinely new rows.** The existing ~4k current-API rows remain cache hits
-after the merge.
+`years`, `limit`, and `delay` inputs. Loops through years sequentially in
+one job (each year reads the parquet from the previous iteration). Resume
+across runs via `actions/cache` with versioned key prefix. Output is a
+90-day artifact named `2210_historical_raw`.
 
 ## Gotchas
 
-- `2210_raw.parquet` and `2210_historical_raw.parquet` have **non-overlapping**
-  control numbers by construction: `fetch_historical.py` excludes CNs already
-  in `2210_raw.parquet` before scraping. `classify.py`'s merge step dedupes
-  defensively anyway.
-- `fetch_historical.py` does **not** write a row on transient errors (network
-  blip, IncompleteRead, 5xx), so rerunning the script retries them. Permanent
-  404/410 do write an empty-education row so they are not retried forever.
-- `extract_skills.py` reads from `2210_verified.parquet` and **skips
-  `not_a_posting` rows** before building its output.
-- `site/data.json` is generated by copying `data/2210_skills.json` — there is
-  no build script. After a fresh pipeline run, copy by hand.
-- `site/index.html` reads `site/data.json` at runtime via `fetch()`. If you
-  add new fields (e.g., `data_source`) and want them rendered, edit
-  `site/index.html` explicitly.
+- `data/` is gitignored — everything there is local-only and must be
+  regenerated or downloaded from workflow artifacts.
+- `site/data.json` is generated by copying `data/2210_skills.json` — there
+  is no build script. Copy by hand after a pipeline run.
 - `gh` may be authenticated as `abigailhaddad-2` by default; this repo is
-  under `abigailhaddad`, so switch accounts with
-  `gh auth switch --user abigailhaddad` before pushing or triggering
-  workflows.
+  under `abigailhaddad`, so `gh auth switch --user abigailhaddad` before
+  pushing or triggering workflows.
+- gpt-5 family models do not support `temperature=0`. The `call_llm` function
+  in `llm_batch.py` omits the temperature parameter.
+- Retry logic in `llm_batch.py` distinguishes transient rate limits (retry)
+  from billing/quota failures (fail fast). Failed rows are NOT cached and
+  are dropped from output so re-running retries them.
 
 ## Active accounts / auth
 

@@ -3,5 +3,7 @@ __pycache__/
 *.pyc
 data/*.parquet
 data/*.json
+data/usajobs_html_cache/
 .claude/
+.netlify/
 .DS_Store
