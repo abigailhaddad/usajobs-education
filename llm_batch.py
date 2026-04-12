@@ -179,7 +179,13 @@ async def run_batch(
 
 def _get_openai_client():
     import openai
-    return openai.Client()
+    import httpx
+    return openai.Client(
+        timeout=httpx.Timeout(300.0, connect=60.0),  # 5min read, 1min connect
+    )
+
+
+MAX_BATCH_FILE_BYTES = 10_000_000  # 10MB chunks — small enough to upload on flaky connections
 
 
 def submit_batch(
@@ -190,11 +196,14 @@ def submit_batch(
     model: str,
     response_format_schema: dict,   # JSON schema for structured output
     batch_dir: Path,
-) -> tuple[str | None, list[int], list[int]]:
-    """Write a JSONL of uncached requests, upload to OpenAI Batch API.
+) -> tuple[list[str], list[int], list[int]]:
+    """Write JSONL(s) of uncached requests, upload to OpenAI Batch API.
 
-    Returns (batch_id, uncached_indices, cached_indices).
-    batch_id is None if everything was cached.
+    Automatically splits into multiple batches if the JSONL exceeds
+    the 200MB file-size limit.
+
+    Returns (batch_ids, uncached_indices, cached_indices).
+    batch_ids is empty if everything was cached.
     """
     batch_dir.mkdir(parents=True, exist_ok=True)
     uncached = []
@@ -210,59 +219,94 @@ def submit_batch(
     print(f"  {len(cached_indices)} cached, {len(uncached)} need API calls")
 
     if not uncached:
-        return None, uncached, cached_indices
+        return [], uncached, cached_indices
 
-    # Strip "openai/" prefix if present (batch API wants raw model name)
     raw_model = model.removeprefix("openai/")
 
-    # Write JSONL
-    jsonl_path = batch_dir / "batch_input.jsonl"
-    with open(jsonl_path, "w") as f:
-        for idx in uncached:
-            request = {
-                "custom_id": str(idx),
-                "method": "POST",
-                "url": "/v1/chat/completions",
-                "body": {
-                    "model": raw_model,
-                    "messages": messages_fn(items[idx]),
-                    "response_format": {
-                        "type": "json_schema",
-                        "json_schema": {
-                            "name": "response",
-                            "strict": True,
-                            "schema": response_format_schema,
-                        },
+    # Build request lines and split into chunks under the size limit
+    chunks: list[list[tuple[int, str]]] = [[]]  # list of (idx, json_line) lists
+    current_size = 0
+
+    for idx in uncached:
+        request = {
+            "custom_id": str(idx),
+            "method": "POST",
+            "url": "/v1/chat/completions",
+            "body": {
+                "model": raw_model,
+                "messages": messages_fn(items[idx]),
+                "response_format": {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "response",
+                        "strict": True,
+                        "schema": response_format_schema,
                     },
                 },
-            }
-            f.write(json.dumps(request) + "\n")
+            },
+        }
+        line = json.dumps(request) + "\n"
+        line_bytes = len(line.encode("utf-8"))
 
-    print(f"  Wrote {len(uncached)} requests to {jsonl_path}")
+        if current_size + line_bytes > MAX_BATCH_FILE_BYTES and chunks[-1]:
+            chunks.append([])
+            current_size = 0
 
-    # Upload and create batch
+        chunks[-1].append((idx, line))
+        current_size += line_bytes
+
+    print(f"  Split into {len(chunks)} batch(es): {[len(c) for c in chunks]} requests")
+
+    # Submit each chunk
     client = _get_openai_client()
-    with open(jsonl_path, "rb") as f:
-        uploaded = client.files.create(file=f, purpose="batch")
-    print(f"  Uploaded file: {uploaded.id}")
+    batch_ids = []
+    all_meta_chunks = []
 
-    batch = client.batches.create(
-        input_file_id=uploaded.id,
-        endpoint="/v1/chat/completions",
-        completion_window="24h",
-    )
-    print(f"  Batch created: {batch.id}  status={batch.status}")
+    for chunk_i, chunk in enumerate(chunks):
+        jsonl_path = batch_dir / f"batch_input_{chunk_i}.jsonl"
+        chunk_indices = []
+        with open(jsonl_path, "w") as f:
+            for idx, line in chunk:
+                f.write(line)
+                chunk_indices.append(idx)
 
-    # Save batch metadata for resume
+        # Upload with retry (large files can hit transient SSL/connection errors)
+        for upload_attempt in range(3):
+            try:
+                with open(jsonl_path, "rb") as f:
+                    uploaded = client.files.create(file=f, purpose="batch")
+                break
+            except Exception as e:
+                if upload_attempt == 2:
+                    raise
+                print(f"  Upload error (attempt {upload_attempt + 1}): {e}")
+                time.sleep(5 * (upload_attempt + 1))
+        print(f"  Chunk {chunk_i}: {len(chunk)} requests, file={uploaded.id}")
+
+        batch = client.batches.create(
+            input_file_id=uploaded.id,
+            endpoint="/v1/chat/completions",
+            completion_window="24h",
+        )
+        print(f"    batch={batch.id}  status={batch.status}")
+        batch_ids.append(batch.id)
+        all_meta_chunks.append({
+            "batch_id": batch.id,
+            "file_id": uploaded.id,
+            "n_requests": len(chunk),
+            "uncached_indices": chunk_indices,
+        })
+
+    # Save metadata for resume
     meta = {
-        "batch_id": batch.id,
-        "file_id": uploaded.id,
-        "n_requests": len(uncached),
+        "batch_ids": batch_ids,
+        "chunks": all_meta_chunks,
+        "total_uncached": len(uncached),
         "uncached_indices": uncached,
     }
     (batch_dir / "batch_meta.json").write_text(json.dumps(meta, indent=2))
 
-    return batch.id, uncached, cached_indices
+    return batch_ids, uncached, cached_indices
 
 
 def poll_batch(batch_id: str, interval: int = 30, timeout: int = 86400) -> dict:

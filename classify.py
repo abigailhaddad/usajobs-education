@@ -174,8 +174,8 @@ def main():
     parser.add_argument("--batch", action="store_true",
                         help="Submit to OpenAI Batch API (50%% off, async). "
                              "Run --collect later to get results.")
-    parser.add_argument("--collect", type=str, metavar="BATCH_ID",
-                        help="Collect results from a submitted batch")
+    parser.add_argument("--collect", action="store_true",
+                        help="Collect results from submitted batch(es) using saved metadata")
     args = parser.parse_args()
 
     if args.verify:
@@ -224,7 +224,7 @@ def main():
 
     # ── Batch API mode ────────────────────────────────────────────────
     if args.batch:
-        batch_id, uncached, cached = _submit_batch(
+        batch_ids, uncached, cached = _submit_batch(
             items=items,
             messages_fn=_make_messages,
             cache=cache,
@@ -233,30 +233,53 @@ def main():
             response_format_schema=_response_format_schema(),
             batch_dir=BATCH_DIR,
         )
-        if batch_id:
-            print(f"\nBatch submitted: {batch_id}")
-            print(f"Run this to collect results when done:")
-            print(f"  python classify.py --collect {batch_id}")
+        if batch_ids:
+            print(f"\n{len(batch_ids)} batch(es) submitted:")
+            for bid in batch_ids:
+                print(f"  {bid}")
+            print(f"\nCollect results when done:")
+            print(f"  python classify.py --collect")
         else:
             print("\nAll items cached — nothing to submit.")
         return
 
     if args.collect:
-        print(f"Polling batch {args.collect}...")
-        batch_result = poll_batch(args.collect)
         meta = json.loads((BATCH_DIR / "batch_meta.json").read_text())
-        results, failed = collect_batch(
-            batch_result=batch_result,
-            items=items,
-            uncached_indices=meta["uncached_indices"],
-            cached_indices=[i for i in range(len(items))
-                           if i not in set(meta["uncached_indices"])],
-            cache=cache,
-            cache_key_fn=make_cache_key,
-            cache_path=CACHE_FILE,
-            parse_fn=_parse_batch_response,
-        )
-        _write_output(df, results, failed)
+        batch_ids = meta.get("batch_ids", [meta["batch_id"]] if "batch_id" in meta else [])
+        cached_set = set(meta["uncached_indices"])
+        cached_indices = [i for i in range(len(items)) if i not in cached_set]
+
+        # Collect all chunks
+        results: list[dict | None] = [None] * len(items)
+        all_failed: list[int] = []
+
+        # Fill cached
+        for i in cached_indices:
+            key = make_cache_key(items[i])
+            if key in cache:
+                results[i] = cache[key]
+
+        for chunk_meta in meta.get("chunks", [meta]):
+            bid = chunk_meta["batch_id"]
+            print(f"Polling {bid}...")
+            batch_result = poll_batch(bid)
+            chunk_results, chunk_failed = collect_batch(
+                batch_result=batch_result,
+                items=items,
+                uncached_indices=chunk_meta["uncached_indices"],
+                cached_indices=[],  # cached already filled above
+                cache=cache,
+                cache_key_fn=make_cache_key,
+                cache_path=CACHE_FILE,
+                parse_fn=_parse_batch_response,
+            )
+            # Merge chunk results into main results
+            for i in chunk_meta["uncached_indices"]:
+                if chunk_results[i] is not None:
+                    results[i] = chunk_results[i]
+            all_failed.extend(chunk_failed)
+
+        _write_output(df, results, all_failed)
         return
 
     # ── Real-time mode ────────────────────────────────────────────────
