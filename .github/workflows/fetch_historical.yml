@@ -19,7 +19,7 @@ on:
       delay:
         description: 'Seconds between requests'
         required: false
-        default: '0.5'
+        default: '0.3'
       years:
         description: 'Comma-separated historical_jobs years'
         required: false
@@ -55,15 +55,21 @@ jobs:
           restore-keys: |
             2210-historical-v2-
 
-      - name: Scrape historical 2210
+      - name: Scrape historical 2210 (year by year)
         run: |
           set -euo pipefail
-          args="--delay ${{ inputs.delay || '0.5' }} --years ${{ inputs.years || '2023,2024,2025,2026' }}"
-          if [ -n "${{ inputs.limit }}" ]; then
-            args="$args --limit ${{ inputs.limit }}"
-          fi
-          echo "Running: python fetch_historical.py $args"
-          python fetch_historical.py $args
+          delay="${{ inputs.delay || '0.3' }}"
+          IFS=',' read -ra years <<< "${{ inputs.years || '2023,2024,2025,2026' }}"
+          for year in "${years[@]}"; do
+            echo ""
+            echo "========== Scraping year $year =========="
+            args="--delay $delay --years $year"
+            if [ -n "${{ inputs.limit }}" ]; then
+              args="$args --limit ${{ inputs.limit }}"
+            fi
+            python fetch_historical.py $args
+            echo "========== Year $year complete =========="
+          done
 
       - name: Upload historical parquet artifact
         if: always()
