@@ -8,8 +8,7 @@ Do federal IT jobs actually require a degree? This project classifies education 
 2. **`fetch_historical.py`** — Backfills older 2210 postings that rolled out of `current_jobs`. The `historical_jobs` parquets on R2 carry metadata only, so this scrapes each announcement page and extracts Education + Qualifications sections via regex → `data/2210_historical_raw.parquet`. Runs via the `Fetch historical 2210 jobs` GitHub Actions workflow (loops through years sequentially, resumes via `actions/cache`).
 3. **`classify.py`** — First-pass classification using structured output. Unions `2210_raw.parquet` + `2210_historical_raw.parquet` (when present) and tags each row with `data_source` (`"api"` / `"scraped"`) → `data/2210_classified.parquet`
 4. **`verify.py`** — Second-pass verification using a stronger model on flagged rows → `data/2210_verified.parquet`
-5. **`extract_skills.py`** — Extracts structured skills/specialization/certs per posting → `data/2210_skills.json` (copied to `site/data.json`)
-6. **`site/`** — Static site with results, deployed on Netlify
+5. **`site/`** — Static site with results, deployed on Netlify
 
 Models, prompts, concurrency, and retry settings live in **`config.yaml`**. Shared LLM runner (retry with backoff, caching, async batching) lives in **`llm_batch.py`**.
 
@@ -28,8 +27,6 @@ cp .env.example .env  # Add your OPENAI_API_KEY
 python fetch_data.py
 python classify.py
 python verify.py
-python extract_skills.py
-cp data/2210_skills.json site/data.json
 ```
 
 ### Backfilling historical postings
@@ -43,8 +40,6 @@ gh run download <run_id> --repo abigailhaddad/usajobs-education \
     --name 2210_historical_raw --dir data/
 python classify.py
 python verify.py
-python extract_skills.py
-cp data/2210_skills.json site/data.json
 ```
 
 ### Tests

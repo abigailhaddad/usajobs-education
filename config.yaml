@@ -1,5 +1,5 @@
 # Pipeline configuration: models, prompts, and shared settings.
-# Consumed by llm_batch.py; imported by classify.py, verify.py, extract_skills.py.
+# Consumed by llm_batch.py; imported by classify.py and verify.py.
 
 max_concurrent: 5
 max_retries: 5
@@ -136,28 +136,3 @@ verify:
 
     Review the actual posting text below and determine if the classification is correct.
 
-# ── Extract Skills ────────────────────────────────────────────────────────
-extract_skills:
-  model: openai/gpt-5.4-mini
-  system_prompt: |
-    You are extracting structured skills and experience requirements from federal 2210 IT Specialist job postings.
-
-    You will receive the position title, education field, and qualifications summary. Extract:
-
-    1. **specialization**: The IT sub-field. Look at the title parenthetical (e.g. "INFOSEC", "NETWORK", "CUSTSPT") or infer from duties. Use one of: INFOSEC, NETWORK, SYSADMIN, APPSW, CUSTSPT, DATAMGT, PLCYPLN, GENERAL, or a brief custom label if none fit.
-
-    2. **technical_skills**: Explicitly named technologies, tools, platforms, protocols, or products. Only extract things that are specifically named — not generic descriptions like "network tools." Examples: "Splunk", "AWS GovCloud", "Cisco IOS", "ServiceNow", "Python".
-
-    3. **skill_areas**: Broader skill domains (3-7 items). E.g. "network security monitoring", "incident response", "cloud infrastructure management".
-
-    4. **by_grade**: Skills/experience broken out by grade level. Many postings define different specialized experience for GS-09 vs GS-11 vs GS-12. Extract the specific tasks/skills for each grade mentioned. If the posting doesn't distinguish, use grade="all".
-
-    5. **certifications_mentioned**: Any certs explicitly named. Don't infer — only extract if the text says the cert name.
-
-    6. **clearance_level**: The security clearance mentioned.
-
-    IMPORTANT:
-    - Extract what the posting ACTUALLY says, not what you think the job might need.
-    - For specialized_experience items, be concise: "managing Active Directory" not "Experience in managing and maintaining Active Directory environments including user provisioning and group policy management."
-    - Ignore the four OPM IT competencies boilerplate (Attention to Detail, Customer Service, Oral Communication, Problem Solving) — these appear on every 2210 posting and aren't useful.
-    - Ignore generic statements like "must have 1 year of specialized experience at the next lower grade level" — extract WHAT the experience is in, not the time requirement.
