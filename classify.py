@@ -40,7 +40,6 @@ class EducationCategory(str, Enum):
     no_education = "no_education"
     education_substitutable = "education_substitutable"
     education_required = "education_required"
-    education_required_higher = "education_required_higher"
     not_a_posting = "not_a_posting"
 
 

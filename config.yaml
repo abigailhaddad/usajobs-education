@@ -7,7 +7,7 @@ max_retries: 5
 # ── Classify ──────────────────────────────────────────────────────────────
 classify:
   model: openai/gpt-5.4-mini
-  prompt_version: v3-2026-04-11-mandatory-edge-case
+  prompt_version: v4-drop-edu-required-higher
   system_prompt: |
     You are classifying federal job postings (2210 IT Specialist series) by the role education plays in qualifying for the position.
 
@@ -21,13 +21,11 @@ classify:
 
     - education_required: A degree (bachelor's or higher) is explicitly required at ALL grade levels in the posting, with no experience-only alternative. The posting must make clear you cannot qualify without the degree.
 
-    - education_required_higher: A degree is required at one or more HIGHER grade levels (with no experience alternative at those grades), but NOT required at the lowest grade level. For example: "GS-9 can qualify with 1 year of specialized experience, but GS-12 requires a bachelor's degree with no experience alternative."
+    - education_substitutable: Education is NOT mandatory, but the posting explicitly offers education as ONE way to qualify — alongside experience — at one or more grade levels. A candidate with the right degree and no relevant experience CAN qualify because the posting allows education to substitute for experience. This includes postings where education works at some grades but not others (e.g., education substitutes at GS-9 but "no substitution of education" at GS-12 — education is still a path at GS-9, so this is education_substitutable). This is the shape of most 2210 postings that reference OPM Alternative A / the 2210 individual occupational requirement: "you may qualify with IT-related experience OR a 4-year degree in computer science, information science, information systems management, mathematics, statistics, operations research, or engineering."
 
-    - education_substitutable: Education is NOT mandatory at any grade, but the posting explicitly offers education as ONE way to qualify — alongside experience. A candidate with the right degree and no relevant experience CAN qualify because the posting allows education to substitute for experience (at some or all grades). This is the shape of most 2210 postings that reference OPM Alternative A / the 2210 individual occupational requirement: "you may qualify with IT-related experience OR a 4-year degree in computer science, information science, information systems management, mathematics, statistics, operations research, or engineering."
-
-    - no_education: Education is NOT a qualifying path at any grade. To qualify at every grade level in this posting, you MUST have experience — a degree alone will not get you in. This includes:
-      * Postings that explicitly say "no substitution of education for experience" or "education is not substitutable"
-      * Postings where only experience is listed as a way to qualify and education is not mentioned as an alternative
+    - no_education: Education is NOT a qualifying path at ANY grade. To qualify at every grade level in this posting, you MUST have experience — a degree alone will not get you in at any level. This includes:
+      * Postings that explicitly say "no substitution of education for experience" or "education is not substitutable" at EVERY grade
+      * Postings where only experience is listed as a way to qualify and education is not mentioned as an alternative at any grade
       * Postings where the Education field is empty, boilerplate (transcript instructions, accreditation info, overflow text from other sections), or mentions only high school / GED
       * Postings where education is mentioned only as "preferred" or "desired" — that is not offering education as a QUALIFYING path
 
@@ -35,21 +33,22 @@ classify:
 
     KEY DISTINCTIONS
 
-    1. education_substitutable vs no_education — does the posting OFFER education as a qualifying path?
-       - "Ph.D. or equivalent doctoral degree or 3 full years of graduate education to qualify by education alone" at a given grade → education_substitutable (the phrase "by education alone" explicitly means experience is the other path AND education alone is sufficient)
-       - "Undergraduate and Graduate Education. Major study--computer science, information science, information systems management..." listed in the Education field → education_substitutable (the posting is telling you what degrees count for the education path)
+    1. education_substitutable vs no_education — does the posting OFFER education as a qualifying path at ANY grade?
+       - "Ph.D. or equivalent doctoral degree or 3 full years of graduate education to qualify by education alone" at a given grade → education_substitutable
+       - "Undergraduate and Graduate Education. Major study--computer science, information science, information systems management..." listed in the Education field → education_substitutable
        - "Specialized experience: 1 year at the next lower grade... OR Education: bachelor's degree with a major in..." → education_substitutable
        - "In lieu of specialized experience, you may have..." / "SUBSTITUTION OF EDUCATION FOR SPECIALIZED EXPERIENCE" → education_substitutable
-       - "Education is not substitutable for specialized experience at the GS-12 grade level" at EVERY grade → no_education
-       - "There is no substitution of education for experience" → no_education
+       - Education works at lower grades but "no substitution" at higher grades → education_substitutable (education IS a path at the lower grades)
+       - "Education is not substitutable for specialized experience" at EVERY grade → no_education
+       - "There is no substitution of education for experience" with no education path at any grade → no_education
        - Education field is empty or only contains boilerplate like transcript-submission instructions → no_education
        - Education field only mentions high school / GED → no_education
-       - Boilerplate like "If you are using education to qualify for this position, College transcripts must be submitted" is NOT by itself evidence of substitutability — it's a standard transcript-submission directive that appears on postings regardless of whether education is actually a qualifying path. You need to see the degree presented as an ALTERNATIVE (OR / in lieu / substitute / "may qualify with") elsewhere in the text.
+       - CRITICAL: "no substitution of education at GS-12" does NOT mean education is REQUIRED at GS-12. It means education DOES NOT HELP at GS-12 — you need experience. If other grades DO accept education, classify as education_substitutable. If NO grade accepts education, classify as no_education.
+       - Boilerplate like "If you are using education to qualify for this position, College transcripts must be submitted" is NOT by itself evidence of substitutability — it's a standard transcript-submission directive. You need to see the degree presented as an ALTERNATIVE (OR / in lieu / substitute / "may qualify with") elsewhere in the text.
 
     2. education_substitutable vs education_required — is the degree MANDATORY?
        - "You may qualify with [experience] OR [degree]" → education_substitutable (either path works)
        - "You MUST have a bachelor's degree in computer science to qualify" → education_required (no experience path)
-       - "This position has a positive education requirement — a 4-year degree is required" at all grades → education_required
        - "Positive education requirement" is NOT automatically education_required. In 2210 context it often refers to the OPM standard that allows experience OR education. Look at whether the posting actually forecloses the experience path.
 
     3. HARD EDGE CASE — "degree is mandatory" with a separate experience section.
@@ -70,20 +69,19 @@ classify:
 
        When in doubt on this edge case: if the Education field says "mandatory" / "required" and you can't find OR/in-lieu/substitute language connecting it to the experience requirements, classify as education_required.
 
-    4. education_required_higher vs education_substitutable at higher grades
-       - If lower grades allow experience-or-education AND higher grades ALSO allow experience-or-education → education_substitutable
-       - If lower grades allow experience-or-education AND higher grades require the degree with NO experience path → education_required_higher
-       - If lower grades require experience-only AND higher grades require the degree → education_required_higher (some grade is blocked without a degree)
-
     EXAMPLES
 
     education_substitutable:
     "To qualify for this position at the GS-11 level you must possess one of the following: One year of specialized experience equivalent to the GS-09 level... OR Ph.D. or equivalent doctoral degree OR 3 full years of progressively higher level graduate education leading to such a degree."
     (Both experience AND a doctoral education path are offered. Neither is mandatory.)
 
+    education_substitutable (education works at some grades but not others):
+    "GS-9: You may qualify with 1 year of specialized experience OR a master's degree... GS-12: Education may not be substituted for specialized experience."
+    (Education IS a path at GS-9, even though it's blocked at GS-12. Education works at at least one grade → education_substitutable.)
+
     no_education:
     "Education is not substitutable for specialized experience at the GS-12 grade level. You must have 1 year of specialized experience equivalent to the GS-11 grade level."
-    (Experience is the only path — education cannot qualify you.)
+    (Experience is the only path at every grade — education cannot qualify you at any level.)
 
     education_required:
     "This position has a positive education requirement in addition to the specialized experience requirement. You must possess a bachelor's degree in computer science, engineering, information science, information systems management, mathematics, operations research, statistics, or technology management."
@@ -99,7 +97,7 @@ classify:
 # ── Verify ────────────────────────────────────────────────────────────────
 verify:
   model: openai/gpt-5.4
-  prompt_version: v3-2026-04-11-mandatory-edge-case
+  prompt_version: v4-drop-edu-required-higher
   system_prompt: |
     You are reviewing a classification of a federal 2210 IT Specialist job posting's education requirements.
 
@@ -107,37 +105,31 @@ verify:
 
     The categories (mutually exclusive) are:
 
-    - no_education: Education is NOT a qualifying path at any grade. You MUST have experience — a degree alone will not get you in. Includes: postings that explicitly say "no substitution of education for experience", postings where the Education field is empty or only has transcript/boilerplate text, postings where only experience is described as a way to qualify, postings that only mention a high school diploma.
+    - no_education: Education is NOT a qualifying path at any grade. You MUST have experience — a degree alone will not get you in at any level. Includes: postings that explicitly say "no substitution of education for experience" at every grade, postings where the Education field is empty or only has transcript/boilerplate text, postings where only experience is described as a way to qualify, postings that only mention a high school diploma.
 
-    - education_substitutable: Education is NOT mandatory at any grade, but the posting explicitly offers education as ONE way to qualify — alongside experience. A candidate with the right degree and no experience CAN qualify because the posting allows education to substitute for experience (at some or all grades). This is the shape of most 2210 postings that reference OPM Alternative A: "you may qualify with IT-related experience OR a 4-year degree in computer science, information science, information systems management, mathematics, statistics, operations research, or engineering."
+    - education_substitutable: Education is NOT mandatory, but the posting explicitly offers education as ONE way to qualify — alongside experience — at one or more grade levels. Includes postings where education works at some grades but not others (education is still a path at those grades). This is the shape of most 2210 postings that reference OPM Alternative A.
 
-    - education_required: A degree (bachelor's or higher) is required at ALL grade levels with no experience-only alternative.
-
-    - education_required_higher: A degree is required at higher grade levels (with no experience alternative at those grades), but NOT at the lowest grade level.
+    - education_required: A degree (bachelor's or higher) is required with no experience-only alternative. The posting makes clear you cannot qualify without the degree.
 
     - not_a_posting: Not a real job posting (DHA notice, resume collection, placeholder).
 
     CRITICAL DISTINCTIONS:
 
-    1. no_education vs education_substitutable — does the posting offer education as a qualifying PATH?
-       - "Ph.D. or 3 full years of graduate education to qualify by education alone" → education_substitutable (the phrase explicitly means education alone is sufficient)
-       - "Education is not substitutable for experience" at every grade → no_education (degree does not help)
-       - Empty / boilerplate Education field with no education path in the qual summary → no_education
-       - HS diploma only → no_education
-       - Boilerplate like "If you are using education to qualify for this position, you must provide transcripts..." is NOT by itself evidence of substitutability.
+    1. no_education vs education_substitutable — does the posting offer education as a qualifying PATH at any grade?
+       - "no substitution of education at GS-12" does NOT mean education is REQUIRED at GS-12 — it means education DOES NOT HELP there. If other grades accept education, classify as education_substitutable. If no grade accepts education, classify as no_education.
+       - Boilerplate like "If you are using education to qualify..." is NOT by itself evidence of substitutability.
 
     2. education_substitutable vs education_required — is the degree MANDATORY?
        - "You may qualify with [experience] OR [degree]" → education_substitutable
        - "You MUST have a bachelor's degree..." with no experience-only path → education_required
-       - "Positive education requirement" in 2210 context is ambiguous — it often refers to the OPM Alternative A standard that ALLOWS experience or education. Check whether the posting forecloses the experience path entirely before calling it education_required.
+       - "Positive education requirement" in 2210 context is ambiguous — often refers to OPM Alternative A which ALLOWS experience or education. Check whether the posting actually forecloses the experience path.
 
     3. HARD EDGE CASE — "degree is mandatory" with a separate experience section.
-       Some postings have Education field saying a degree is "mandatory" AND a Qualifications Summary listing required experience as a separate section. The question is whether these are ALTERNATIVES (one OR the other) or CUMULATIVE (both required).
        Test: look for explicit "OR" / "in lieu of" / "substitute" / "may qualify with" language linking them.
-       - CUMULATIVE (no OR/in-lieu/substitute language) → education_required. Both the degree AND the experience are needed; the degree's "mandatory" label stands.
-       - ALTERNATIVES (has OR/in-lieu/substitute language somewhere) → education_substitutable.
+       - CUMULATIVE (no OR/in-lieu/substitute language) → education_required.
+       - ALTERNATIVES (has OR/in-lieu/substitute language) → education_substitutable.
 
-    4. A degree is only "required" if the posting makes clear you CANNOT qualify without it at some grade level.
+    4. A degree is only "required" if the posting makes clear you CANNOT qualify without it.
 
     The first-pass classification was: {original_category}
     The first-pass reasoning was: {original_reasoning}

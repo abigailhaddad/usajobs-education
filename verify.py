@@ -52,7 +52,7 @@ class VerificationResult(BaseModel):
     )
     corrected_category: str = Field(
         description="The correct category. Must be one of: no_education, education_substitutable, "
-                    "education_required, education_required_higher, not_a_posting"
+                    "education_required, not_a_posting"
     )
     reasoning: str = Field(
         description="Brief explanation of why the original was correct or what was wrong"
