@@ -259,9 +259,9 @@ def main():
             if key in cache:
                 results[i] = cache[key]
 
-        for chunk_meta in meta.get("chunks", [meta]):
+        for ci, chunk_meta in enumerate(meta.get("chunks", [meta])):
             bid = chunk_meta["batch_id"]
-            print(f"Polling {bid}...")
+            print(f"Collecting chunk {ci+1}/{len(meta.get('chunks', [meta]))}: {bid}")
             batch_result = poll_batch(bid)
             chunk_results, chunk_failed = collect_batch(
                 batch_result=batch_result,
@@ -279,6 +279,20 @@ def main():
                     results[i] = chunk_results[i]
             all_failed.extend(chunk_failed)
 
+        # Fill any remaining Nones from cache (rows cached between
+        # submission and collection, e.g. from test runs)
+        backfilled = 0
+        for i in range(len(results)):
+            if results[i] is None:
+                key = make_cache_key(items[i])
+                if key in cache:
+                    results[i] = cache[key]
+                    backfilled += 1
+        if backfilled:
+            print(f"  Backfilled {backfilled} rows from cache")
+
+        # Any still-None are real failures
+        all_failed = [i for i in range(len(results)) if results[i] is None]
         _write_output(df, results, all_failed)
         return
 
