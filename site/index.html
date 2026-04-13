@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2210 IT Specialist: Education &amp; Skills Requirements</title>
+<title>2210 IT Specialist: Education Requirements</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
@@ -17,6 +17,7 @@
   --primary: #2D6A4F;
   --primary-hover: #245A42;
   --gold: #D4A03C;
+  --blue: #2563EB;
   --border: #E8DDD0;
 }
 body { background: var(--bg); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 1.0625rem; }
@@ -34,29 +35,23 @@ a { color: var(--primary); } a:hover { color: var(--primary-hover); }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.75rem; min-width: 160px; flex: 1; }
 .stat-card .number { font-family: 'DM Sans', sans-serif; font-size: 2.25rem; font-weight: 700; color: var(--primary); }
 .stat-card .label { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
-.stat-card.highlight .number { color: var(--gold); }
+.stat-card.gold .number { color: var(--gold); }
+.stat-card.blue .number { color: var(--blue); }
 
 .chart-section { margin: 2rem 0; }
 .bar-chart { max-width: 800px; }
 .bar-row { display: flex; align-items: center; margin-bottom: 0.5rem; gap: 0.75rem; }
 .bar-label { width: 320px; min-width: 320px; text-align: right; font-size: 0.875rem; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; text-decoration: underline; }
 .bar-label:hover { color: var(--primary-hover); }
-.bar-track { flex: 1; height: 24px; background: var(--surface); border-radius: 4px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 4px; min-width: 2px; }
+.bar-track { flex: 1; height: 24px; background: var(--surface); border-radius: 4px; overflow: hidden; display: flex; }
+.bar-fill { height: 100%; min-width: 2px; }
 .bar-fill.edu-req { background: var(--gold); }
-.bar-fill.skill-bar { background: var(--primary); }
-.bar-value { width: 80px; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); }
+.bar-fill.edu-sub { background: var(--blue); opacity: 0.6; }
+.bar-value { width: 120px; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); }
 .dept-jobs { margin: 0.5rem 0 1rem 320px; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; display: none; }
 .dept-jobs.open { display: block; }
 .dept-jobs a { display: block; margin: 0.25rem 0; }
 .dept-jobs .dept-jobs-header { font-weight: 600; margin-bottom: 0.5rem; }
-
-.top-lists { display: flex; gap: 2rem; flex-wrap: wrap; margin: 1.5rem 0; }
-.top-list { flex: 1; min-width: 280px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
-.top-list h3 { margin-top: 0; margin-bottom: 0.75rem; }
-.top-item { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; cursor: pointer; }
-.top-item:hover { color: var(--primary); }
-.top-item .count { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 0.8rem; }
 
 .filter-bar { margin: 1.5rem 0 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
 .filter-bar select, .filter-bar input { padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; }
@@ -65,25 +60,24 @@ a { color: var(--primary); } a:hover { color: var(--primary-hover); }
 
 .cat-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
 .cat-no_education { background: #d4edda; color: #155724; }
+.cat-education_substitutable { background: #d1ecf1; color: #0c5460; }
 .cat-education_required { background: #f8d7da; color: #721c24; }
-.cat-education_required_higher { background: #fff3cd; color: #856404; }
-
-.skill-tag { display: inline-block; padding: 2px 8px; margin: 1px; border-radius: 8px; font-size: 0.75rem; background: var(--surface); border: 1px solid var(--border); }
-.cert-tag { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; }
+.cat-not_a_posting { background: #e2e3e5; color: #383d41; }
 
 table.dataTable { font-size: 0.9rem; }
 table.dataTable thead th { background: var(--surface); font-size: 0.8125rem; font-weight: 600; }
 table.dataTable tbody tr:nth-child(odd) { background: var(--bg); }
 table.dataTable tbody tr:nth-child(even) { background: var(--surface); }
 table.dataTable tbody tr:hover { background: var(--border) !important; }
-table.dataTable td { vertical-align: top; }
-td.skills-cell { max-width: 350px; }
-td.reasoning-cell { max-width: 300px; font-size: 0.82rem; color: var(--text-muted); }
 .dataTables_paginate .paginate_button.current { background: var(--primary) !important; color: var(--bg) !important; border-color: var(--primary) !important; }
 
 .methodology { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 2rem; margin: 2rem 0; }
 .methodology h3 { margin-top: 0; }
 .methodology p { margin-bottom: 0.5rem; font-size: 0.95rem; }
+
+.legend { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 0.75rem 0; font-size: 0.85rem; }
+.legend-item { display: flex; align-items: center; gap: 0.4rem; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; }
 
 .site-footer { padding: 2rem 0; margin-top: 3rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.9rem; }
 </style>
@@ -92,33 +86,33 @@ td.reasoning-cell { max-width: 300px; font-size: 0.82rem; color: var(--text-mute
 <div class="site-container">
   <header class="site-header">
     <h1>Do 2210 IT Jobs Require a Degree?</h1>
-    <p class="subtitle">Education requirements and skills across ~3,900 federal IT Specialist (2210 series) job postings, mid-2025 to present</p>
+    <p class="subtitle" id="subtitleText"></p>
   </header>
 
   <div class="stat-cards" id="stats"></div>
 
   <div class="chart-section">
     <h2>Education Requirements by Department</h2>
-    <p class="subtitle">Departments with education-required postings (click to see jobs)</p>
+    <p class="subtitle">How education factors into qualification at each department</p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--gold)"></div> Degree required</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--blue);opacity:0.6"></div> Degree is one qualifying path</div>
+    </div>
     <div class="bar-chart" id="deptChart"></div>
   </div>
 
-  <h2>Most Requested Skills &amp; Certifications</h2>
-  <div class="top-lists" id="topLists"></div>
-
   <div class="methodology">
     <h3>Methodology</h3>
-    <p>Data comes from the <a href="https://developer.usajobs.gov/" target="_blank">USAJobs API</a>, which I started polling in mid-2025. The dataset contains all 2210 (IT Management) series postings that appeared in the <code>current_jobs</code> snapshot from that point forward. Education classifications used GPT-5.4-mini with structured output, verified by GPT-5.4 on edge cases. Skills were extracted from qualification summaries using GPT-5.4-mini. Code and data are on <a href="https://github.com/abigailhaddad/usajobs-education" target="_blank">GitHub</a>.</p>
-    <p><strong>no_education</strong>: No degree required at any grade level. Includes postings where education can substitute for experience &mdash; since you can qualify with experience alone, there is no education <em>requirement</em>.</p>
-    <p><strong>education_required</strong>: A bachelor's degree or higher is explicitly required with no experience-only alternative.</p>
-    <p><strong>education_required_higher</strong>: Degree required only at higher grade levels, not lower ones.</p>
+    <p>Data comes from <a href="https://www.usajobs.gov" target="_blank">USAJobs</a>. Current postings are pulled from the API; historical postings (2023&ndash;2024) are backfilled by scraping announcement pages. Education classifications use GPT-5.4-mini with structured output via the OpenAI Batch API, verified by GPT-5.4 on edge cases. Code and data are on <a href="https://github.com/abigailhaddad/usajobs-education" target="_blank">GitHub</a>.</p>
+    <p><strong>no_education</strong>: Education is not a qualifying path at any grade. You must have experience.</p>
+    <p><strong>education_substitutable</strong>: Education is one way to qualify alongside experience. A candidate with the right degree can qualify even without relevant experience.</p>
+    <p><strong>education_required</strong>: A degree is explicitly required with no experience-only alternative.</p>
   </div>
 
   <h2>All Postings</h2>
   <div class="filter-bar">
-    <input type="text" id="skillSearch" placeholder="Search skills, certs, tools...">
+    <input type="text" id="titleSearch" placeholder="Search titles...">
     <select id="catFilter"><option value="">All categories</option></select>
-    <select id="specFilter"><option value="">All specializations</option></select>
     <select id="deptFilter"><option value="">All departments</option></select>
     <select id="yearFilter"><option value="">All years</option></select>
     <button class="clear-btn" id="clearFilters">Clear filters</button>
@@ -128,12 +122,11 @@ td.reasoning-cell { max-width: 300px; font-size: 0.82rem; color: var(--text-mute
     <thead>
       <tr>
         <th>Education</th>
-        <th>Specialization</th>
         <th>Title</th>
         <th>Agency</th>
+        <th>Department</th>
         <th>Grade</th>
-        <th>Skills &amp; Certs</th>
-        <th>Clearance</th>
+        <th>Year</th>
         <th>Link</th>
       </tr>
     </thead>
@@ -152,8 +145,9 @@ td.reasoning-cell { max-width: 300px; font-size: 0.82rem; color: var(--text-mute
 <script>
 const CAT_LABELS = {
   'no_education': 'No Degree Required',
+  'education_substitutable': 'Degree is One Path',
   'education_required': 'Degree Required',
-  'education_required_higher': 'Degree Req. (Higher Grades)',
+  'not_a_posting': 'Not a Posting',
 };
 
 function escapeHtml(s) {
@@ -167,129 +161,84 @@ $(document).ready(function() {
 });
 
 function buildPage(jobs) {
+  // Exclude not_a_posting from display
+  jobs = jobs.filter(j => j.edu_category !== 'not_a_posting');
   const total = jobs.length;
   const cats = {};
-  const by_department = {};
-  const skillCounts = {};
-  const certCounts = {};
-  const specCounts = {};
-
-  jobs.forEach(j => {
-    cats[j.edu_category] = (cats[j.edu_category] || 0) + 1;
-    const dept = j.department || 'Unknown';
-    if (!by_department[dept]) by_department[dept] = { total: 0, req: 0 };
-    by_department[dept].total++;
-    if (j.edu_category === 'education_required' || j.edu_category === 'education_required_higher') by_department[dept].req++;
-
-    (j.skill_areas || []).forEach(s => { skillCounts[s] = (skillCounts[s] || 0) + 1; });
-    (j.technical_skills || []).forEach(s => { skillCounts[s] = (skillCounts[s] || 0) + 1; });
-    (j.certifications_mentioned || []).forEach(s => { certCounts[s] = (certCounts[s] || 0) + 1; });
-    specCounts[j.specialization] = (specCounts[j.specialization] || 0) + 1;
-  });
+  jobs.forEach(j => { cats[j.edu_category] = (cats[j.edu_category] || 0) + 1; });
 
   const noEdu = cats.no_education || 0;
-  const eduReq = (cats.education_required || 0) + (cats.education_required_higher || 0);
+  const eduSub = cats.education_substitutable || 0;
+  const eduReq = cats.education_required || 0;
+  const years = [...new Set(jobs.map(j => j.source_year))].sort();
+  const yearRange = years.length > 1 ? `${years[0]}\u2013${years[years.length-1]}` : `${years[0]}`;
+
+  document.getElementById('subtitleText').textContent =
+    `Education requirements across ${total.toLocaleString()} federal IT Specialist (2210 series) postings, ${yearRange}`;
 
   // Stat cards
   document.getElementById('stats').innerHTML = `
     <div class="stat-card"><div class="number">${total.toLocaleString()}</div><div class="label">Total 2210 Postings</div></div>
     <div class="stat-card"><div class="number">${((noEdu/total)*100).toFixed(1)}%</div><div class="label">No Degree Required</div></div>
-    <div class="stat-card highlight"><div class="number">${eduReq}</div><div class="label">Require a Degree (${((eduReq/total)*100).toFixed(1)}%)</div></div>
-    <div class="stat-card"><div class="number">${Object.keys(specCounts).length}</div><div class="label">Specialization Areas</div></div>
+    <div class="stat-card blue"><div class="number">${((eduSub/total)*100).toFixed(1)}%</div><div class="label">Degree is One Path</div></div>
+    <div class="stat-card gold"><div class="number">${eduReq}</div><div class="label">Degree Required (${((eduReq/total)*100).toFixed(1)}%)</div></div>
   `;
 
-  // Dept chart
-  const depts = Object.entries(by_department).map(([n,d]) => ({name:n,...d})).filter(d => d.req > 0).sort((a,b) => b.req - a.req);
-  const deptJobs = {};
+  // Dept chart — show req + substitutable stacked
+  const by_dept = {};
   jobs.forEach(j => {
-    if (j.edu_category === 'education_required' || j.edu_category === 'education_required_higher') {
-      const dept = j.department || 'Unknown';
-      if (!deptJobs[dept]) deptJobs[dept] = [];
-      deptJobs[dept].push(j);
-    }
+    const dept = j.department || 'Unknown';
+    if (!by_dept[dept]) by_dept[dept] = { total: 0, req: 0, sub: 0, jobs_req: [], jobs_sub: [] };
+    by_dept[dept].total++;
+    if (j.edu_category === 'education_required') { by_dept[dept].req++; by_dept[dept].jobs_req.push(j); }
+    if (j.edu_category === 'education_substitutable') { by_dept[dept].sub++; by_dept[dept].jobs_sub.push(j); }
   });
-  const maxReq = Math.max(...depts.map(d => d.req), 1);
+  const depts = Object.entries(by_dept)
+    .map(([n,d]) => ({name:n,...d}))
+    .filter(d => d.req > 0 || d.sub > 20)
+    .sort((a,b) => (b.req + b.sub) - (a.req + a.sub))
+    .slice(0, 25);
+  const maxBar = Math.max(...depts.map(d => d.req + d.sub), 1);
+
   document.getElementById('deptChart').innerHTML = depts.map((d,i) => {
-    const pct = (d.req/maxReq)*100;
-    const djobs = deptJobs[d.name] || [];
-    const links = djobs.map(j => `<a href="${escapeHtml(j.usajobs_url)}" target="_blank">${escapeHtml(j.position_title)} (${escapeHtml(j.agency)})</a>`).join('');
+    const reqPct = (d.req/maxBar)*100;
+    const subPct = (d.sub/maxBar)*100;
     return `<div class="bar-row">
       <div class="bar-label" title="${escapeHtml(d.name)}" data-dept-idx="${i}">${escapeHtml(d.name)}</div>
-      <div class="bar-track"><div class="bar-fill edu-req" style="width:${pct}%"></div></div>
-      <div class="bar-value">${d.req} / ${d.total}</div>
-    </div><div class="dept-jobs" id="dept-detail-${i}"><div class="dept-jobs-header">${escapeHtml(d.name)} &mdash; ${d.req} posting${d.req>1?'s':''} requiring a degree:</div>${links}</div>`;
+      <div class="bar-track">
+        <div class="bar-fill edu-req" style="width:${reqPct}%"></div>
+        <div class="bar-fill edu-sub" style="width:${subPct}%"></div>
+      </div>
+      <div class="bar-value">${d.req} req / ${d.sub} sub / ${d.total}</div>
+    </div><div class="dept-jobs" id="dept-detail-${i}"><div class="dept-jobs-header">${escapeHtml(d.name)} &mdash; ${d.req} required, ${d.sub} substitutable, ${d.total} total</div>
+      ${d.jobs_req.slice(0,20).map(j => `<a href="${escapeHtml(j.usajobs_url)}" target="_blank">[req] ${escapeHtml(j.position_title)} (${escapeHtml(j.agency)})</a>`).join('')}
+      ${d.req > 20 ? `<p>...and ${d.req-20} more</p>` : ''}
+    </div>`;
   }).join('');
   document.querySelectorAll('.bar-label[data-dept-idx]').forEach(el => {
     el.addEventListener('click', function() { document.getElementById('dept-detail-'+this.dataset.deptIdx).classList.toggle('open'); });
   });
 
-  // Top skills & certs
-  const topSkills = Object.entries(skillCounts).sort((a,b) => b[1]-a[1]).slice(0,20);
-  const topCerts = Object.entries(certCounts).sort((a,b) => b[1]-a[1]).slice(0,15);
-  const topSpecs = Object.entries(specCounts).sort((a,b) => b[1]-a[1]).slice(0,10);
-  const maxSkill = topSkills[0] ? topSkills[0][1] : 1;
-
-  document.getElementById('topLists').innerHTML = `
-    <div class="top-list">
-      <h3>Top Skills</h3>
-      ${topSkills.map(([s,c]) => `<div class="top-item" data-search="${escapeHtml(s)}"><span>${escapeHtml(s)}</span><span class="count">${c}</span></div>`).join('')}
-    </div>
-    <div class="top-list">
-      <h3>Top Certifications</h3>
-      ${topCerts.length ? topCerts.map(([s,c]) => `<div class="top-item" data-search="${escapeHtml(s)}"><span>${escapeHtml(s)}</span><span class="count">${c}</span></div>`).join('') : '<p style="color:var(--text-muted)">Most 2210 postings don\'t name specific certifications in qualifications</p>'}
-    </div>
-    <div class="top-list">
-      <h3>Specializations</h3>
-      ${topSpecs.map(([s,c]) => `<div class="top-item" data-search="${escapeHtml(s)}"><span>${escapeHtml(s)}</span><span class="count">${c}</span></div>`).join('')}
-    </div>
-  `;
-
-  // Click top items to search
-  document.querySelectorAll('.top-item[data-search]').forEach(el => {
-    el.addEventListener('click', function() {
-      $('#skillSearch').val(this.dataset.search);
-      activeSkillSearch = this.dataset.search.toLowerCase();
-      table.draw();
-      document.getElementById('jobs').scrollIntoView({behavior:'smooth'});
-    });
-  });
-
-  // Build searchable text per job
-  const searchTexts = jobs.map(j => {
-    return [
-      ...(j.skill_areas || []),
-      ...(j.technical_skills || []),
-      ...(j.certifications_mentioned || []),
-      j.specialization,
-      ...(j.by_grade || []).flatMap(g => g.specialized_experience || []),
-    ].join(' ').toLowerCase();
-  });
-
   // Filters
-  const catSet = new Set(), specSet = new Set(), deptSet = new Set(), yearSet = new Set();
-  jobs.forEach(j => { catSet.add(j.edu_category); specSet.add(j.specialization); deptSet.add(j.department); yearSet.add(j.source_year); });
+  const catSet = new Set(), deptSet = new Set(), yearSet = new Set();
+  jobs.forEach(j => { catSet.add(j.edu_category); deptSet.add(j.department); yearSet.add(j.source_year); });
   [...catSet].sort().forEach(c => $('#catFilter').append(`<option value="${c}">${CAT_LABELS[c]||c}</option>`));
-  [...specSet].sort().forEach(s => $('#specFilter').append(`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`));
   [...deptSet].sort().forEach(d => $('#deptFilter').append(`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`));
   [...yearSet].sort().forEach(y => $('#yearFilter').append(`<option value="${y}">${y}</option>`));
 
   // DataTable
-  const tableData = jobs.map((j,i) => {
-    const skillTags = [...(j.skill_areas||[]).map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`),
-                        ...(j.technical_skills||[]).map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`),
-                        ...(j.certifications_mentioned||[]).map(s => `<span class="skill-tag cert-tag">${escapeHtml(s)}</span>`)].join(' ');
+  const tableData = jobs.map(j => {
     const grade = j.min_grade === j.max_grade ? j.min_grade : j.min_grade+'-'+j.max_grade;
-    return [j.edu_category, j.specialization, j.position_title, j.agency, grade, skillTags, j.clearance_level, j.usajobs_url];
+    return [j.edu_category, j.position_title, j.agency, j.department, grade, j.source_year, j.usajobs_url];
   });
 
-  let activeCat='', activeSpec='', activeDept='', activeYear='', activeSkillSearch='';
+  let activeCat='', activeDept='', activeYear='', activeTitleSearch='';
   $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     const j = jobs[dataIndex];
     if (activeCat && j.edu_category !== activeCat) return false;
-    if (activeSpec && j.specialization !== activeSpec) return false;
     if (activeDept && j.department !== activeDept) return false;
     if (activeYear && j.source_year !== parseInt(activeYear)) return false;
-    if (activeSkillSearch && !searchTexts[dataIndex].includes(activeSkillSearch)) return false;
+    if (activeTitleSearch && !j.position_title.toLowerCase().includes(activeTitleSearch)) return false;
     return true;
   });
 
@@ -299,25 +248,23 @@ function buildPage(jobs) {
     order: [[0, 'desc']],
     columns: [
       { title:'Education', render: d => `<span class="cat-badge cat-${d}">${CAT_LABELS[d]||d}</span>`, width:'140px' },
-      { title:'Spec', width:'80px' },
       { title:'Title' },
       { title:'Agency' },
+      { title:'Department' },
       { title:'Grade', width:'60px' },
-      { title:'Skills & Certs', className:'skills-cell' },
-      { title:'Clearance', width:'80px' },
+      { title:'Year', width:'50px' },
       { title:'Link', render: d => d ? `<a href="${escapeHtml(d)}" target="_blank">View</a>` : '', width:'40px' },
     ]
   });
 
   $('#catFilter').on('change', function() { activeCat=this.value; table.draw(); });
-  $('#specFilter').on('change', function() { activeSpec=this.value; table.draw(); });
   $('#deptFilter').on('change', function() { activeDept=this.value; table.draw(); });
   $('#yearFilter').on('change', function() { activeYear=this.value; table.draw(); });
-  $('#skillSearch').on('input', function() { activeSkillSearch=this.value.toLowerCase(); table.draw(); });
+  $('#titleSearch').on('input', function() { activeTitleSearch=this.value.toLowerCase(); table.draw(); });
   $('#clearFilters').on('click', function() {
-    activeCat=activeSpec=activeDept=activeYear=activeSkillSearch='';
-    $('#catFilter,#specFilter,#deptFilter,#yearFilter').val('');
-    $('#skillSearch').val('');
+    activeCat=activeDept=activeYear=activeTitleSearch='';
+    $('#catFilter,#deptFilter,#yearFilter').val('');
+    $('#titleSearch').val('');
     table.draw();
   });
 }
