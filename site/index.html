@@ -178,16 +178,34 @@ function buildPage(jobs) {
   document.getElementById('subtitleText').textContent =
     `Education requirements across ${total.toLocaleString()} federal IT Specialist (2210 series) postings, ${yearRange}`;
 
-  // Stat cards — all percentages, rounded
-  const pctNoEdu = Math.round((noEdu/total)*100);
-  const pctSub = Math.round((eduSub/total)*100);
-  const pctReq = Math.round((eduReq/total)*100);
-  document.getElementById('stats').innerHTML = `
-    <div class="stat-card"><div class="number">${total.toLocaleString()}</div><div class="label">Total 2210 Postings</div></div>
-    <div class="stat-card"><div class="number">${pctNoEdu}%</div><div class="label">Experience Only</div></div>
-    <div class="stat-card blue"><div class="number">${pctSub}%</div><div class="label">Degree is One Path</div></div>
-    <div class="stat-card gold"><div class="number">${pctReq}%</div><div class="label">Degree Required</div></div>
-  `;
+  // Stat cards — update on filter changes
+  function updateStats() {
+    const filtered = jobs.filter(j => {
+      if (activeCat && j.edu_category !== activeCat) return false;
+      if (activeDept && j.department !== activeDept) return false;
+      if (activeYear && j.source_year !== parseInt(activeYear)) return false;
+      if (activeTitleSearch && !j.position_title.toLowerCase().includes(activeTitleSearch)) return false;
+      return true;
+    });
+    const n = filtered.length;
+    const fcats = {};
+    filtered.forEach(j => { fcats[j.edu_category] = (fcats[j.edu_category] || 0) + 1; });
+    const fNoEdu = fcats.no_education || 0;
+    const fSub = fcats.education_substitutable || 0;
+    const fReq = fcats.education_required || 0;
+    const pctNoEdu = n ? Math.round((fNoEdu/n)*100) : 0;
+    const pctSub = n ? Math.round((fSub/n)*100) : 0;
+    const pctReq = n ? Math.round((fReq/n)*100) : 0;
+    const label = n === total ? 'Total 2210 Postings' : `Filtered (of ${total.toLocaleString()})`;
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card"><div class="number">${n.toLocaleString()}</div><div class="label">${label}</div></div>
+      <div class="stat-card"><div class="number">${pctNoEdu}%</div><div class="label">Experience Only</div></div>
+      <div class="stat-card blue"><div class="number">${pctSub}%</div><div class="label">Degree is One Path</div></div>
+      <div class="stat-card gold"><div class="number">${pctReq}%</div><div class="label">Degree Required</div></div>
+    `;
+  }
+  let activeCat='', activeDept='', activeYear='', activeTitleSearch='';
+  updateStats();
 
   // Dept chart — show req + substitutable stacked
   const by_dept = {};
@@ -237,7 +255,6 @@ function buildPage(jobs) {
     return [j.edu_category, j.position_title, j.agency, j.department, grade, j.source_year, j.usajobs_url];
   });
 
-  let activeCat='', activeDept='', activeYear='', activeTitleSearch='';
   $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
     const j = jobs[dataIndex];
     if (activeCat && j.edu_category !== activeCat) return false;
@@ -262,15 +279,16 @@ function buildPage(jobs) {
     ]
   });
 
-  $('#catFilter').on('change', function() { activeCat=this.value; table.draw(); });
-  $('#deptFilter').on('change', function() { activeDept=this.value; table.draw(); });
-  $('#yearFilter').on('change', function() { activeYear=this.value; table.draw(); });
-  $('#titleSearch').on('input', function() { activeTitleSearch=this.value.toLowerCase(); table.draw(); });
+  $('#catFilter').on('change', function() { activeCat=this.value; table.draw(); updateStats(); });
+  $('#deptFilter').on('change', function() { activeDept=this.value; table.draw(); updateStats(); });
+  $('#yearFilter').on('change', function() { activeYear=this.value; table.draw(); updateStats(); });
+  $('#titleSearch').on('input', function() { activeTitleSearch=this.value.toLowerCase(); table.draw(); updateStats(); });
   $('#clearFilters').on('click', function() {
     activeCat=activeDept=activeYear=activeTitleSearch='';
     $('#catFilter,#deptFilter,#yearFilter').val('');
     $('#titleSearch').val('');
     table.draw();
+    updateStats();
   });
 }
 </script>
