@@ -103,10 +103,12 @@ table.dataTable tbody tr:hover { background: var(--border) !important; }
 
   <div class="methodology">
     <h3>Methodology</h3>
-    <p>Data comes from <a href="https://www.usajobs.gov" target="_blank">USAJobs</a>. Current postings are pulled from the API; historical postings (2023&ndash;2024) are backfilled by scraping announcement pages. Education classifications use GPT-5.4-mini with structured output via the OpenAI Batch API, verified by GPT-5.4 on edge cases. Code and data are on <a href="https://github.com/abigailhaddad/usajobs-education" target="_blank">GitHub</a>.</p>
-    <p><strong>no_education</strong>: Education is not a qualifying path at any grade. You must have experience.</p>
-    <p><strong>education_substitutable</strong>: Education is one way to qualify alongside experience. A candidate with the right degree can qualify even without relevant experience.</p>
-    <p><strong>education_required</strong>: A degree is explicitly required with no experience-only alternative.</p>
+    <p><strong>Data source:</strong> All postings come from <a href="https://www.usajobs.gov" target="_blank">USAJobs</a>. Recent postings (mid-2025 onward) were pulled directly from the USAJobs API, which includes structured Education and Qualifications fields. Older postings (2023&ndash;early 2025) are no longer in the API, so we scraped their announcement pages from usajobs.gov and extracted the Education and Qualifications sections from the HTML. The extraction was validated against API ground truth for overlapping postings. See <a href="https://github.com/abigailhaddad/usajobs-education" target="_blank">GitHub</a> for code and data.</p>
+    <p><strong>Classification:</strong> Each posting's Education and Qualifications text was classified by GPT-5.4-mini using structured output (the model must pick from the categories below and provide a verbatim quote from the posting). Classifications were validated against a hand-labeled test set of 22 postings across all categories.</p>
+    <h3>Categories</h3>
+    <p><strong>no_education</strong>: Education is not a qualifying path at any grade level. You must have experience &mdash; a degree alone will not get you in. This includes postings that explicitly say "no substitution of education for experience" as well as postings where only experience is listed as a way to qualify.</p>
+    <p><strong>education_substitutable</strong>: Education is not mandatory, but the posting explicitly offers it as one way to qualify alongside experience. For example, many 2210 postings under OPM Alternative A say you can qualify with IT-related experience <em>or</em> a 4-year degree in computer science, information systems, etc. If education works at some grade levels but not others, the posting is still classified here &mdash; education is a path at at least one grade.</p>
+    <p><strong>education_required</strong>: A bachelor's degree or higher is explicitly required with no experience-only alternative. The posting makes clear you cannot qualify without the degree.</p>
   </div>
 
   <h2>All Postings</h2>
