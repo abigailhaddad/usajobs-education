@@ -35,6 +35,7 @@ a { color: var(--primary); } a:hover { color: var(--primary-hover); }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.75rem; min-width: 160px; flex: 1; }
 .stat-card .number { font-family: 'DM Sans', sans-serif; font-size: 2.25rem; font-weight: 700; color: var(--primary); }
 .stat-card .label { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem; }
+.stat-card .count { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); }
 .stat-card.gold .number { color: var(--gold); }
 .stat-card.blue .number { color: var(--blue); }
 
@@ -57,6 +58,11 @@ a { color: var(--primary); } a:hover { color: var(--primary-hover); }
 .filter-bar select, .filter-bar input { padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; }
 .filter-bar input { width: 250px; }
 .filter-bar .clear-btn { background: none; border: none; color: var(--primary); font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
+.active-filters { margin: 0.5rem 0 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.active-filters:empty { display: none; }
+.active-filters .af-label { color: var(--text-muted); font-size: 0.85rem; }
+.filter-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.7rem; background: var(--primary); color: var(--bg); border-radius: 999px; font-size: 0.8rem; }
+.filter-chip button { background: none; border: none; color: var(--bg); cursor: pointer; padding: 0; font-size: 1rem; line-height: 1; }
 
 .cat-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
 .cat-no_education { background: #d4edda; color: #155724; }
@@ -89,6 +95,7 @@ table.dataTable tbody tr:hover { background: var(--border) !important; }
     <p class="subtitle" id="subtitleText"></p>
   </header>
 
+  <div id="activeFilters" class="active-filters"></div>
   <div class="stat-cards" id="stats"></div>
 
   <div class="chart-section">
@@ -178,73 +185,110 @@ function buildPage(jobs) {
   document.getElementById('subtitleText').textContent =
     `Education requirements across ${total.toLocaleString()} federal IT Specialist (2210 series) postings, ${yearRange}`;
 
-  // Stat cards — update on filter changes
-  function updateStats() {
-    const filtered = jobs.filter(j => {
+  let activeCat='', activeDept='', activeYear='', activeTitleSearch='';
+
+  function getFiltered() {
+    return jobs.filter(j => {
       if (activeCat && j.edu_category !== activeCat) return false;
       if (activeDept && j.department !== activeDept) return false;
       if (activeYear && j.source_year !== parseInt(activeYear)) return false;
       if (activeTitleSearch && !j.position_title.toLowerCase().includes(activeTitleSearch)) return false;
       return true;
     });
+  }
+
+  function renderActiveFilters() {
+    const chips = [];
+    if (activeCat) chips.push({key:'cat', label:`Category: ${CAT_LABELS[activeCat]||activeCat}`});
+    if (activeDept) chips.push({key:'dept', label:`Department: ${activeDept}`});
+    if (activeYear) chips.push({key:'year', label:`Year: ${activeYear}`});
+    if (activeTitleSearch) chips.push({key:'title', label:`Title contains: "${activeTitleSearch}"`});
+    const host = document.getElementById('activeFilters');
+    if (!chips.length) { host.innerHTML = ''; return; }
+    host.innerHTML = `<span class="af-label">Active filters:</span>` + chips.map(c =>
+      `<span class="filter-chip">${escapeHtml(c.label)} <button data-clear="${c.key}" aria-label="Clear">&times;</button></span>`
+    ).join('');
+    host.querySelectorAll('button[data-clear]').forEach(b => {
+      b.addEventListener('click', () => clearOne(b.dataset.clear));
+    });
+  }
+
+  function clearOne(key) {
+    if (key==='cat') { activeCat=''; $('#catFilter').val(''); }
+    if (key==='dept') { activeDept=''; $('#deptFilter').val(''); }
+    if (key==='year') { activeYear=''; $('#yearFilter').val(''); }
+    if (key==='title') { activeTitleSearch=''; $('#titleSearch').val(''); }
+    refresh();
+  }
+
+  function updateStats(filtered) {
     const n = filtered.length;
     const fcats = {};
     filtered.forEach(j => { fcats[j.edu_category] = (fcats[j.edu_category] || 0) + 1; });
-    const fNoEdu = fcats.no_education || 0;
-    const fSub = fcats.education_substitutable || 0;
-    const fReq = fcats.education_required || 0;
-    const pctNoEdu = n ? Math.round((fNoEdu/n)*100) : 0;
-    const pctSub = n ? Math.round((fSub/n)*100) : 0;
-    const pctReq = n ? Math.round((fReq/n)*100) : 0;
+    const cNoEdu = fcats.no_education||0;
+    const cSub = fcats.education_substitutable||0;
+    const cReq = fcats.education_required||0;
+    const pctNoEdu = n ? Math.round((cNoEdu/n)*100) : 0;
+    const pctSub = n ? Math.round((cSub/n)*100) : 0;
+    const pctReq = n ? Math.round((cReq/n)*100) : 0;
     const label = n === total ? 'Total 2210 Postings' : `Filtered (of ${total.toLocaleString()})`;
     document.getElementById('stats').innerHTML = `
       <div class="stat-card"><div class="number">${n.toLocaleString()}</div><div class="label">${label}</div></div>
-      <div class="stat-card"><div class="number">${pctNoEdu}%</div><div class="label">Experience Only</div></div>
-      <div class="stat-card blue"><div class="number">${pctSub}%</div><div class="label">Degree is One Path</div></div>
-      <div class="stat-card gold"><div class="number">${pctReq}%</div><div class="label">Degree Required</div></div>
+      <div class="stat-card"><div class="number">${pctNoEdu}%</div><div class="label">Experience Only <span class="count">(${cNoEdu.toLocaleString()})</span></div></div>
+      <div class="stat-card blue"><div class="number">${pctSub}%</div><div class="label">Degree is One Path <span class="count">(${cSub.toLocaleString()})</span></div></div>
+      <div class="stat-card gold"><div class="number">${pctReq}%</div><div class="label">Degree Required <span class="count">(${cReq.toLocaleString()})</span></div></div>
     `;
   }
-  let activeCat='', activeDept='', activeYear='', activeTitleSearch='';
-  updateStats();
 
-  // Dept chart — show req + substitutable stacked
-  const by_dept = {};
-  jobs.forEach(j => {
-    const dept = j.department || 'Unknown';
-    if (!by_dept[dept]) by_dept[dept] = { total: 0, req: 0, sub: 0, jobs_req: [], jobs_sub: [] };
-    by_dept[dept].total++;
-    if (j.edu_category === 'education_required') { by_dept[dept].req++; by_dept[dept].jobs_req.push(j); }
-    if (j.edu_category === 'education_substitutable') { by_dept[dept].sub++; by_dept[dept].jobs_sub.push(j); }
-  });
-  const depts = Object.entries(by_dept)
-    .map(([n,d]) => ({name:n,...d}))
-    .filter(d => d.req > 0 || d.sub > 20)
-    .sort((a,b) => (b.req + b.sub) - (a.req + a.sub))
-    .slice(0, 25);
-  const maxBar = Math.max(...depts.map(d => d.req + d.sub), 1);
+  function renderDeptChart(filtered) {
+    const by_dept = {};
+    filtered.forEach(j => {
+      const dept = j.department || 'Unknown';
+      if (!by_dept[dept]) by_dept[dept] = { total: 0, req: 0, sub: 0, jobs_req: [], jobs_sub: [] };
+      by_dept[dept].total++;
+      if (j.edu_category === 'education_required') { by_dept[dept].req++; by_dept[dept].jobs_req.push(j); }
+      if (j.edu_category === 'education_substitutable') { by_dept[dept].sub++; by_dept[dept].jobs_sub.push(j); }
+    });
+    const depts = Object.entries(by_dept)
+      .map(([n,d]) => ({name:n,...d}))
+      .filter(d => d.req > 0 || d.sub > 20)
+      .sort((a,b) => (b.req + b.sub) - (a.req + a.sub))
+      .slice(0, 25);
+    const host = document.getElementById('deptChart');
+    if (!depts.length) { host.innerHTML = '<p class="subtitle">No departments match the current filters.</p>'; return; }
+    const maxBar = Math.max(...depts.map(d => d.req + d.sub), 1);
+    host.innerHTML = depts.map((d,i) => {
+      const reqPct = (d.req/maxBar)*100;
+      const subPct = (d.sub/maxBar)*100;
+      return `<div class="bar-row">
+        <div class="bar-label" title="${escapeHtml(d.name)}" data-dept-idx="${i}">${escapeHtml(d.name)}</div>
+        <div class="bar-track">
+          <div class="bar-fill edu-req" style="width:${reqPct}%"></div>
+          <div class="bar-fill edu-sub" style="width:${subPct}%"></div>
+        </div>
+        <div class="bar-value">${d.req} req / ${d.sub} sub / ${d.total}</div>
+      </div><div class="dept-jobs" id="dept-detail-${i}"><div class="dept-jobs-header">${escapeHtml(d.name)} &mdash; ${d.req} required, ${d.sub} substitutable, ${d.total} total</div>
+        ${d.jobs_req.slice(0,20).map(j => `<a href="${escapeHtml(j.usajobs_url)}" target="_blank">[req] ${escapeHtml(j.position_title)} (${escapeHtml(j.agency)})</a>`).join('')}
+        ${d.req > 20 ? `<p>...and ${d.req-20} more</p>` : ''}
+      </div>`;
+    }).join('');
+    host.querySelectorAll('.bar-label[data-dept-idx]').forEach(el => {
+      el.addEventListener('click', function() { document.getElementById('dept-detail-'+this.dataset.deptIdx).classList.toggle('open'); });
+    });
+  }
 
-  document.getElementById('deptChart').innerHTML = depts.map((d,i) => {
-    const reqPct = (d.req/maxBar)*100;
-    const subPct = (d.sub/maxBar)*100;
-    return `<div class="bar-row">
-      <div class="bar-label" title="${escapeHtml(d.name)}" data-dept-idx="${i}">${escapeHtml(d.name)}</div>
-      <div class="bar-track">
-        <div class="bar-fill edu-req" style="width:${reqPct}%"></div>
-        <div class="bar-fill edu-sub" style="width:${subPct}%"></div>
-      </div>
-      <div class="bar-value">${d.req} req / ${d.sub} sub / ${d.total}</div>
-    </div><div class="dept-jobs" id="dept-detail-${i}"><div class="dept-jobs-header">${escapeHtml(d.name)} &mdash; ${d.req} required, ${d.sub} substitutable, ${d.total} total</div>
-      ${d.jobs_req.slice(0,20).map(j => `<a href="${escapeHtml(j.usajobs_url)}" target="_blank">[req] ${escapeHtml(j.position_title)} (${escapeHtml(j.agency)})</a>`).join('')}
-      ${d.req > 20 ? `<p>...and ${d.req-20} more</p>` : ''}
-    </div>`;
-  }).join('');
-  document.querySelectorAll('.bar-label[data-dept-idx]').forEach(el => {
-    el.addEventListener('click', function() { document.getElementById('dept-detail-'+this.dataset.deptIdx).classList.toggle('open'); });
-  });
+  function refresh() {
+    const filtered = getFiltered();
+    renderActiveFilters();
+    updateStats(filtered);
+    renderDeptChart(filtered);
+    if (window._table) window._table.draw();
+  }
+  refresh();
 
   // Filters
   const catSet = new Set(), deptSet = new Set(), yearSet = new Set();
-  jobs.forEach(j => { catSet.add(j.edu_category); deptSet.add(j.department); yearSet.add(j.source_year); });
+  jobs.forEach(j => { catSet.add(j.edu_category); if (j.department) deptSet.add(j.department); yearSet.add(j.source_year); });
   [...catSet].sort().forEach(c => $('#catFilter').append(`<option value="${c}">${CAT_LABELS[c]||c}</option>`));
   [...deptSet].sort().forEach(d => $('#deptFilter').append(`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`));
   [...yearSet].sort().forEach(y => $('#yearFilter').append(`<option value="${y}">${y}</option>`));
@@ -264,7 +308,7 @@ function buildPage(jobs) {
     return true;
   });
 
-  const table = $('#jobs').DataTable({
+  window._table = $('#jobs').DataTable({
     data: tableData,
     pageLength: 25,
     order: [[0, 'desc']],
@@ -279,16 +323,15 @@ function buildPage(jobs) {
     ]
   });
 
-  $('#catFilter').on('change', function() { activeCat=this.value; table.draw(); updateStats(); });
-  $('#deptFilter').on('change', function() { activeDept=this.value; table.draw(); updateStats(); });
-  $('#yearFilter').on('change', function() { activeYear=this.value; table.draw(); updateStats(); });
-  $('#titleSearch').on('input', function() { activeTitleSearch=this.value.toLowerCase(); table.draw(); updateStats(); });
+  $('#catFilter').on('change', function() { activeCat=this.value; refresh(); });
+  $('#deptFilter').on('change', function() { activeDept=this.value; refresh(); });
+  $('#yearFilter').on('change', function() { activeYear=this.value; refresh(); });
+  $('#titleSearch').on('input', function() { activeTitleSearch=this.value.toLowerCase(); refresh(); });
   $('#clearFilters').on('click', function() {
     activeCat=activeDept=activeYear=activeTitleSearch='';
     $('#catFilter,#deptFilter,#yearFilter').val('');
     $('#titleSearch').val('');
-    table.draw();
-    updateStats();
+    refresh();
   });
 }
 </script>
