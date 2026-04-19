@@ -24,6 +24,59 @@
 # Education + QualificationSummary text.
 
 patches:
+  # ── Hand-verified per-CN overrides ────────────────────────────────────
+  # Each CN here was eyeballed against the actual posting text. Prefer
+  # adding to an existing patch block (grouped by target category) over
+  # creating a new one-off patch.
+
+  - name: hand_verified_to_no_education
+    description: |
+      Individually reviewed rows originally labeled education_required
+      where the Basic Requirements in fact offer only an experience path
+      and the "positive education requirement" / transcript language in
+      the Education field is not backed up by an actual degree mandate.
+    match:
+      control_numbers:
+        # DoE IT Cybersecurity — Edu field says "positive education
+        # requirement" + transcript directive, but the BASIC REQUIREMENT
+        # in qualifications is "IT-related experience demonstrating each
+        # of the four competencies listed below." No degree mandated.
+        - "843112700"
+    set:
+      edu_category: no_education
+
+  - name: hand_verified_to_education_substitutable
+    description: |
+      Individually reviewed rows originally labeled education_required
+      where the posting text contains explicit OR-substitution language
+      (education OR experience, in lieu of, substitution header). The
+      model missed the alternative path.
+    match:
+      control_numbers:
+        # Navy BI Data Scientist — "A bachelor's degree... is required
+        # AND 3 years of experience OR an appropriate combination of
+        # education and experience"
+        - "844991500"
+        # NOAA Lead IT INFOSEC — "positive Education Requirement in
+        # addition to at least one year of Specialized Experience OR
+        # substitution of education for experience OR combination"
+        - "725974900"
+        # AF IT Specialist (INFOSEC) — explicit section header
+        # "Substitution of Education for Specialized Experience"
+        - "854310500"
+        # DoD IT Project Manager — explicit section header
+        # "SUBSTITUTION OF EDUCATION FOR EXPERIENCE"
+        - "861407000"
+        # FAA IT Specialist (AppSoft) — "This standard allows eligibility
+        # through meeting either the requirements specified in the
+        # section titled Education or the requirements specified in the
+        # section titled Experience"
+        - "798991600"
+    set:
+      edu_category: education_substitutable
+
+  # ── Regex rules ───────────────────────────────────────────────────────
+
   - name: no_substitution_template_at_high_grades
     description: |
       Rows labeled education_required whose text explicitly says "no
