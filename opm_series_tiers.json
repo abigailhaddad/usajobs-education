@@ -1,0 +1,2534 @@
+[
+  {
+    "series_num": "0006",
+    "series_title": "GS-006 Correctional Institution Administration*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0007",
+    "series_title": "Correctional Officer Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0011",
+    "series_title": "GS-011 Bond Sales Promotion*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0017",
+    "series_title": "GS-017 Explosives Safety",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0018",
+    "series_title": "GS-018 Safety and Occupational Health Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0019",
+    "series_title": "GS-019 Safety Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0020",
+    "series_title": "GS-020 Community Planning",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0021",
+    "series_title": "GS-021 Community Planning Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0023",
+    "series_title": "GS-023 Outdoor Recreation Planning*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0025",
+    "series_title": "Park Ranger Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0028",
+    "series_title": "GS-028 Environmental Protection Specialist",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0029",
+    "series_title": "GS-029 Environmental Protection Assistant",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0030",
+    "series_title": "GS-030 Sports Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0050",
+    "series_title": "Funeral Directing Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0060",
+    "series_title": "Chaplain Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0062",
+    "series_title": "GS-062 Clothing Design*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0072",
+    "series_title": "GS-072 Fingerprint Identification",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0080",
+    "series_title": "GS-080 Security Administration",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0081",
+    "series_title": "Fire Protection and Prevention Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0082",
+    "series_title": "United States Marshall Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0083",
+    "series_title": "Police Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0084",
+    "series_title": "Nuclear Materials Courier Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0085",
+    "series_title": "Security Guard Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0086",
+    "series_title": "GS-086 Security Clerical and Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0089",
+    "series_title": "GS-089 Emergency Management Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0090",
+    "series_title": "GS-090 Guide*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0095",
+    "series_title": "Foreign Law Specialist Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0099",
+    "series_title": "GS-099 General Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0101",
+    "series_title": "GS-101 Social Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0102",
+    "series_title": "GS-102 Social Science Aid and Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0105",
+    "series_title": "GS-105 Social Insurance Administration",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0106",
+    "series_title": "GS-106 Unemployment Insurance*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0107",
+    "series_title": "GS-107 Health Insurance Administration",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0110",
+    "series_title": "GS-110 Economist",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0119",
+    "series_title": "GS-119 Economics Assistant*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0130",
+    "series_title": "GS-130 Foreign Affairs",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0131",
+    "series_title": "GS-131 International Relations",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0132",
+    "series_title": "GS-132 Intelligence",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0134",
+    "series_title": "GS-134 Intelligence Aid and Clerk",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0135",
+    "series_title": "Foreign Agricultural Affairs Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0136",
+    "series_title": "GS-136 International Cooperation",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0140",
+    "series_title": "GS-140 Workforce Research and Analysis",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0142",
+    "series_title": "GS-142 Workforce Development",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0150",
+    "series_title": "GS-150 Geography",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0160",
+    "series_title": "GS-160 Civil Rights Analysis",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0170",
+    "series_title": "GS-170 History",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0180",
+    "series_title": "GS-180 Psychology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0181",
+    "series_title": "GS-181 Psychology Aid and Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0184",
+    "series_title": "GS-184 Sociology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0185",
+    "series_title": "GS-185 Social Work",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0186",
+    "series_title": "GS-186 Social Services Aid and Assistant*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0187",
+    "series_title": "Social Services Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0188",
+    "series_title": "GS-188 Recreation Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0189",
+    "series_title": "Recreation Aid and Assistant Series, GS-189",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0190",
+    "series_title": "GS-190 General Anthropology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0193",
+    "series_title": "GS-193 Archeology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0199",
+    "series_title": "GS-199 Social Science Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0201",
+    "series_title": "GS-201 Human Resources Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0203",
+    "series_title": "GS-203 Human Resources Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0241",
+    "series_title": "Mediation Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0243",
+    "series_title": "Apprenticeship and Training Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0244",
+    "series_title": "GS-244 Labor Management Relations Examining*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0260",
+    "series_title": "GS-260 Equal Employment Opportunity",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0299",
+    "series_title": "GS-299 Personnel Management Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0301",
+    "series_title": "GS-301 Miscellaneous Administration and Program",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0302",
+    "series_title": "GS-302 Messenger*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0303",
+    "series_title": "GS-303 Miscellaneous Clerk and Assistant",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0304",
+    "series_title": "GS-304 Information Receptionist",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0305",
+    "series_title": "GS-305 Mail and File",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0306",
+    "series_title": "GS-0306, Government Information Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0308",
+    "series_title": "GS-0308 Records and Information Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0309",
+    "series_title": "GS-309 Correspondence Clerk",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0312",
+    "series_title": "GS-312 Clerk-Stenographer and Reporter",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0313",
+    "series_title": "Work Unit Supervising Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0318",
+    "series_title": "GS-318 Secretary",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0319",
+    "series_title": "GS-319 Closed Microphone Reporting",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0322",
+    "series_title": "GS-322 Clerk-Typist",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0326",
+    "series_title": "GS-326 Office Automation Clerical and Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0332",
+    "series_title": "GS-332 Computer Operation",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0335",
+    "series_title": "GS-335 Computer Clerk and Assistant",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0340",
+    "series_title": "GS-340 Program Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0341",
+    "series_title": "GS-341 Administrative Officer",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0342",
+    "series_title": "Support Services Administration Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0343",
+    "series_title": "GS-343 Management and Program Analysis",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0344",
+    "series_title": "GS-344 Management and Program Clerical and Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0346",
+    "series_title": "GS-346 Logistics Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0350",
+    "series_title": "GS-350 Equipment Operator",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0351",
+    "series_title": "GS-351 Printing Clerical",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0356",
+    "series_title": "GS-356 Data Transcriber",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0357",
+    "series_title": "GS-357 Coding",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0359",
+    "series_title": "GS-359 Electric Accounting Machine Operation",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0360",
+    "series_title": "GS-360 Equal Opportunity Compliance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0361",
+    "series_title": "GS-361 Equal Opportunity Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0362",
+    "series_title": "GS-362 Electric Accounting Machine Project Planning",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0382",
+    "series_title": "GS-382 Telephone Operating",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0390",
+    "series_title": "GS-390 Telecommunications Processing",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0391",
+    "series_title": "GS-391 Telecommunications*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0392",
+    "series_title": "GS-392 General Telecommunications",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0394",
+    "series_title": "GS-394 Communications Clerical",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0399",
+    "series_title": "GS-399 Administration and Office Support Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0401",
+    "series_title": "GS-401 General Biological Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0403",
+    "series_title": "GS-403 Microbiology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0404",
+    "series_title": "GS-404 Biological Science Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0405",
+    "series_title": "GS-405 Pharmacology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0408",
+    "series_title": "GS-408 Ecology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0410",
+    "series_title": "GS-410 Zoology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0413",
+    "series_title": "GS-413 Physiology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0415",
+    "series_title": "GS-415 Toxicology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0421",
+    "series_title": "GS-421 Plant Protection Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0430",
+    "series_title": "GS-430 Botany",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0434",
+    "series_title": "GS-434 Plant Pathology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0435",
+    "series_title": "GS-435 Plant Physiology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0436",
+    "series_title": "GS-436 Plant Protection and Quarantine",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0437",
+    "series_title": "GS-437 Horticulture",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0440",
+    "series_title": "GS-440 Genetics",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0454",
+    "series_title": "GS-454 Rangeland Management",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0455",
+    "series_title": "GS-455 Range Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0457",
+    "series_title": "GS-457 Soil Conservation",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0458",
+    "series_title": "GS-458 Soil Conservation Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0459",
+    "series_title": "GS-459 Irrigation System Operation*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0460",
+    "series_title": "GS-460 Forestry",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0462",
+    "series_title": "GS-462 Forestry Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0470",
+    "series_title": "GS-470 Soil Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0471",
+    "series_title": "GS-471 Agronomy",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0480",
+    "series_title": "GS-480 General Fish and Wildlife Administration",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0482",
+    "series_title": "GS-482 Fishery Biology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0485",
+    "series_title": "GS-485 Wildlife Refuge Management",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0486",
+    "series_title": "GS-486 Wildlife Biology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0487",
+    "series_title": "GS-487 Animal Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0499",
+    "series_title": "GS-499 Biological Science Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0501",
+    "series_title": "GS-501 Financial Administration and Program",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0503",
+    "series_title": "GS-503 Financial Clerical and Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0505",
+    "series_title": "GS-505 Financial Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0510",
+    "series_title": "GS-510 Accounting",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0511",
+    "series_title": "Auditing Series, 0511",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0512",
+    "series_title": "GS-512 Internal Revenue Agent",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0525",
+    "series_title": "GS-525 Accounting Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0526",
+    "series_title": "GS-526 Tax Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0530",
+    "series_title": "GS-530 Cash Processing",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0540",
+    "series_title": "GS-540 Voucher Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0544",
+    "series_title": "GS-544 Civilian Pay",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0545",
+    "series_title": "GS-545 Military Pay",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0560",
+    "series_title": "GS-560 Budget Analysis",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0561",
+    "series_title": "GS-561 Budget Clerical and Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0570",
+    "series_title": "GS-570 Financial Institution Examining*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0592",
+    "series_title": "GS-592 Tax Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0593",
+    "series_title": "GS-593 Insurance Accounts",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0599",
+    "series_title": "GS-599 Financial Management Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0601",
+    "series_title": "General Medical and Healthcare Series, 0601",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0602",
+    "series_title": "Physician Series, 0602",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0603",
+    "series_title": "Physician Assistant Series, 0603",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0610",
+    "series_title": "Nursing Series, 0610",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0620",
+    "series_title": "Practical Nurse Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0621",
+    "series_title": "GS-621 Nursing Assistant*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0622",
+    "series_title": "GS-622 Medical Supply Aide and Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0625",
+    "series_title": "GS-625 Autopsy Assistant*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0630",
+    "series_title": "Dietetics and Nutrition Series, 0630",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0631",
+    "series_title": "Occupational Therapy Series, 0631",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0633",
+    "series_title": "Physical Therapy Series, 0633",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0635",
+    "series_title": "Kinesiotherapy Series, 0635",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0636",
+    "series_title": "GS-636 Rehabilitation Therapy Assistant*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0637",
+    "series_title": "GS-637 Manual Arts Therapist",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0638",
+    "series_title": "Recreation/Creative Arts Therapy Series, 0638",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0639",
+    "series_title": "GS-639 Educational Therapist",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0640",
+    "series_title": "GS-640 Health Aid and Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0642",
+    "series_title": "GS-642 Nuclear Medicine Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0644",
+    "series_title": "Clinical Laboratory Science Series, 0644",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0645",
+    "series_title": "GS-645 Medical Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0646",
+    "series_title": "GS-646 Pathology Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0647",
+    "series_title": "GS-647 Diagnostic Radiologic Technologist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0648",
+    "series_title": "GS-648 Therapeutic Radiologic Technologist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0649",
+    "series_title": "GS-649 Medical Instrument Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0651",
+    "series_title": "GS-651 Respiratory Therapist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0660",
+    "series_title": "Pharmacy Series, 0660",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0661",
+    "series_title": "GS-661 Pharmacy Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0662",
+    "series_title": "Optometry Series, 0662",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0665",
+    "series_title": "Speech/Language Pathology and Audiology Series, 0665",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0667",
+    "series_title": "Orthotist and Prosthetist Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0668",
+    "series_title": "Podiatry Series, 0668",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0669",
+    "series_title": "GS-669 Medical Records Administration*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0670",
+    "series_title": "GS-670 Health System Administration*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0671",
+    "series_title": "GS-671 Health System Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0672",
+    "series_title": "GS-672 Prosthetic Representative",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0673",
+    "series_title": "GS-673 Hospital Housekeeping Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0675",
+    "series_title": "GS-675 Medical Records Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0679",
+    "series_title": "GS-679 Medical Support Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0680",
+    "series_title": "Dentistry Series, 0680",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0681",
+    "series_title": "GS-681 Dental Assistant*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0682",
+    "series_title": "Dental Hygiene Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0683",
+    "series_title": "GS-683 Dental Laboratory Aid and Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0685",
+    "series_title": "GS-685 Public Health Program Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0688",
+    "series_title": "Sanitarian Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0690",
+    "series_title": "Industrial Hygiene Series, 0690",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0696",
+    "series_title": "Consumer Safety Series, 0696",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0698",
+    "series_title": "GS-698 Environmental Health Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0699",
+    "series_title": "GS-699 Medical and Health Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0701",
+    "series_title": "Veterinary Health Science Series",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0704",
+    "series_title": "GS-704 Animal Health Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0799",
+    "series_title": "GS-799 Veterinary Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0801",
+    "series_title": "GS-801 General Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0802",
+    "series_title": "GS-802 Engineering Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0803",
+    "series_title": "GS-803 Safety Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0804",
+    "series_title": "GS-804 Fire Protection Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0806",
+    "series_title": "GS-806 Materials Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0807",
+    "series_title": "GS-807 Landscape Architecture",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0808",
+    "series_title": "GS-808 Architecture",
+    "tier": "mandatory",
+    "mandatory_type": "professional"
+  },
+  {
+    "series_num": "0809",
+    "series_title": "GS-809 Construction Control Technical*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0810",
+    "series_title": "GS-810 Civil Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0817",
+    "series_title": "GS-817 Survey Technical*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0819",
+    "series_title": "GS-819 Environmental Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0828",
+    "series_title": "GS-828 Construction Analyst*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0830",
+    "series_title": "GS-830 Mechanical Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0840",
+    "series_title": "GS-840 Nuclear Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0850",
+    "series_title": "GS-850 Electrical Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0854",
+    "series_title": "GS-854 Computer Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0855",
+    "series_title": "GS-855 Electronics Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0856",
+    "series_title": "GS-856 Electronics Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0858",
+    "series_title": "GS-858 Biomedical Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0861",
+    "series_title": "GS-861 Aerospace Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0871",
+    "series_title": "GS-871 Naval Architecture",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0873",
+    "series_title": "Marine Survey Technical Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0880",
+    "series_title": "GS-880 Mining Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0881",
+    "series_title": "GS-881 Petroleum Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0890",
+    "series_title": "GS-890 Agricultural Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0892",
+    "series_title": "GS-892 Ceramic Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0893",
+    "series_title": "GS-893 Chemical Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0894",
+    "series_title": "GS-894 Welding Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0895",
+    "series_title": "Industrial Engineering Technician Series, GS-895",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0896",
+    "series_title": "GS-896 Industrial Engineering",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0899",
+    "series_title": "GS-899 Engineering and Architecture Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "0901",
+    "series_title": "GS-1046 Language Clerical*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0904",
+    "series_title": "Law Clerk Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0905",
+    "series_title": "General Attorney Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0920",
+    "series_title": "GS-920 Estate Tax Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0930",
+    "series_title": "GS-930 Hearings and Appeals",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0950",
+    "series_title": "GS-950 Paralegal Specialist",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0958",
+    "series_title": "GS-958 Pension Law Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0962",
+    "series_title": "GS-962 Contact Representative",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0963",
+    "series_title": "GS-963 Legal Instruments Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0965",
+    "series_title": "GS-965 Land Law Examining*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0967",
+    "series_title": "GS-967 Passport and Visa Examining*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0986",
+    "series_title": "GS-986 Legal Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0987",
+    "series_title": "Tax Law Specialist Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0991",
+    "series_title": "GS-991 Workers' Compensation Claims Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0993",
+    "series_title": "GS-993 Railroad Retirement Claims Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0994",
+    "series_title": "Unemployment Compensation Claims Examining Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0996",
+    "series_title": "GS-996 Veterans Claims Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0998",
+    "series_title": "GS-998 Claims Assistance and Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "0999",
+    "series_title": "GS-999 Legal Occupations Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1001",
+    "series_title": "GS-1001 General Arts and Information",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1008",
+    "series_title": "GS-1008 Interior Design*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1010",
+    "series_title": "GS-1010 Exhibits Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1015",
+    "series_title": "GS-1015 Museum Curator",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1016",
+    "series_title": "Museum Specialist and Technician Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1020",
+    "series_title": "GS-1020 Illustrating*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1021",
+    "series_title": "GS-1021 Office Drafting*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1035",
+    "series_title": "GS-1035 Public Affairs",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1040",
+    "series_title": "GS-1040 Language Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1051",
+    "series_title": "GS-1051 Music Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1054",
+    "series_title": "GS-1054 Theater Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1056",
+    "series_title": "GS-1056 Art Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1060",
+    "series_title": "Photography Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1071",
+    "series_title": "GS-1071 Audiovisual Production*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1082",
+    "series_title": "GS-1082 Writing and Editing",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1083",
+    "series_title": "GS-1083 Technical Writing and Editing*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1084",
+    "series_title": "GS-1084 Visual Information*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1087",
+    "series_title": "GS-1087 Editorial Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1099",
+    "series_title": "GS-1099 Information and Arts Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1101",
+    "series_title": "GS-1101 General Business and Industry",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1102",
+    "series_title": "Contracting Series",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1103",
+    "series_title": "GS-1103 Industrial Property Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1104",
+    "series_title": "GS-1104 Property Disposal",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1105",
+    "series_title": "GS-1105 Purchasing",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1106",
+    "series_title": "GS-1106 Procurement Clerical and Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1107",
+    "series_title": "GS-1107 Property Disposal Clerical and Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1109",
+    "series_title": "GS 1109 Grants Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1130",
+    "series_title": "GS-1130 Public Utilities Specialist",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1140",
+    "series_title": "GS-1140 Trade Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1144",
+    "series_title": "GS-1144 Commissary Store Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1145",
+    "series_title": "GS-1145 Agricultural Program Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1146",
+    "series_title": "GS-1146 Agricultural Marketing*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1147",
+    "series_title": "GS-1147 Agricultural Market Reporting",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1150",
+    "series_title": "GS-1150 Industrial Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1152",
+    "series_title": "GS-1152 Production Control",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1160",
+    "series_title": "GS-1160 Financial Analysis*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1161",
+    "series_title": "GS-1161 Crop Insurance Administration*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1162",
+    "series_title": "GS-1162 Crop Insurance Underwriting*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1163",
+    "series_title": "GS-1163 Insurance Examining*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1165",
+    "series_title": "GS-1165 Loan Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1169",
+    "series_title": "GS-1169 Internal Revenue Officer*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1170",
+    "series_title": "GS-1170 Realty",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1171",
+    "series_title": "GS-1171 Appraising",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1173",
+    "series_title": "GS-1173 Housing Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1176",
+    "series_title": "GS-1176 Building Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1199",
+    "series_title": "GS-1199 Business and Industry Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1202",
+    "series_title": "GS-1202 Patent Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1210",
+    "series_title": "Copyright Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1211",
+    "series_title": "Copyright Technician Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1220",
+    "series_title": "Patent Administration Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1221",
+    "series_title": "GS-1221 Patent Adviser",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1222",
+    "series_title": "Patent Attorney Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1223",
+    "series_title": "GS-1223 Patent Classifying",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1224",
+    "series_title": "GS-1224 Patent Examining",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1226",
+    "series_title": "GS-1226 Design Patent Examining",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1299",
+    "series_title": "GS-1299 Copyright and Patent Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1301",
+    "series_title": "GS-1301 General Physical Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1306",
+    "series_title": "GS-1306 Health Physics",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1310",
+    "series_title": "GS-1310 Physics",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1311",
+    "series_title": "GS-1311 Physical Science Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1313",
+    "series_title": "GS-1313 Geophysics",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1315",
+    "series_title": "GS-1315 Hydrology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1316",
+    "series_title": "GS-1316 Hydrologic Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1320",
+    "series_title": "GS-1320 Chemistry",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1321",
+    "series_title": "GS-1321 Metallurgy",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1330",
+    "series_title": "GS-1330 Astronomy and Space Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1340",
+    "series_title": "GS-1340 Meteorology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1341",
+    "series_title": "GS-1341 Meteorological Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1350",
+    "series_title": "GS-1350 Geology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1360",
+    "series_title": "GS-1360 Oceanography",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1361",
+    "series_title": "GS-1361 Navigational Information*",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1370",
+    "series_title": "GS-1370 Cartography",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1371",
+    "series_title": "GS-1371 Cartographic Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1372",
+    "series_title": "GS-1372 Geodesy",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1373",
+    "series_title": "GS-1373 Land Surveying",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1374",
+    "series_title": "GS-1374 Geodetic Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1380",
+    "series_title": "GS-1380 Forest Products Technology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1382",
+    "series_title": "GS-1382 Food Technology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1384",
+    "series_title": "GS-1384 Textile Technology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1386",
+    "series_title": "GS-1386 Photographic Technology",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1397",
+    "series_title": "GS-1397 Document Analysis*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1399",
+    "series_title": "GS-1399 Physical Science Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1410",
+    "series_title": "Librarian Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1411",
+    "series_title": "GS-1411 Library Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1412",
+    "series_title": "Technical Information Services",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1420",
+    "series_title": "GS-1420 Archivist",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1421",
+    "series_title": "GS-1421 Archives Specialist",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1499",
+    "series_title": "GS-1499 Library and Archives Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1501",
+    "series_title": "General Mathematics and Statistics Series",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1510",
+    "series_title": "GS-1510 Actuary",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1515",
+    "series_title": "GS-1515 Operations Research",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1520",
+    "series_title": "GS-1520 Mathematics",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1521",
+    "series_title": "GS-1521 Mathematics Technician*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1529",
+    "series_title": "GS-1529 Mathematical Statistician",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1530",
+    "series_title": "GS-1530 Statistician",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1531",
+    "series_title": "GS-1531 Statistical Assistant",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1541",
+    "series_title": "GS-1541 Cryptanalysis*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1550",
+    "series_title": "GS-1550 Computer Science",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1560",
+    "series_title": "GS-1560 \u2013 Data Science Series",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1599",
+    "series_title": "GS-1599 Mathematics and Statistics Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1601",
+    "series_title": "GS-1601 Equipment, Facilities, and Services",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1603",
+    "series_title": "GS-1603 Equipment, Facilities, and Services Assistance",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1630",
+    "series_title": "GS-1630 Cemetery Administration",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1640",
+    "series_title": "GS-1640 Facility Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1654",
+    "series_title": "GS-1654 Printing Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1658",
+    "series_title": "GS-1658 Laundry Operations Services",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1667",
+    "series_title": "GS-1667 Food Services",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1670",
+    "series_title": "GS-1670 Equipment Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1699",
+    "series_title": "GS-1699 Equipment and Facilities Management Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1701",
+    "series_title": "GS-1701 General Education and Training",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1702",
+    "series_title": "GS-1702 Education and Training Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1710",
+    "series_title": "GS-1710 Education and Vocational Training",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1712",
+    "series_title": "GS-1712 Training Instruction*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1715",
+    "series_title": "GS-1715 Vocational Rehabilitation*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1720",
+    "series_title": "GS-1720 Education Program",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1725",
+    "series_title": "GS-1725 Public Health Educator",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1730",
+    "series_title": "GS-1730 Education Research",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1740",
+    "series_title": "GS-1740 Education Services",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1750",
+    "series_title": "GS-1750 Instructional Systems",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1799",
+    "series_title": "GS-1799 Education Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1801",
+    "series_title": "GS-1801 General Inspection, Investigation, Enforcement, and Compliance Series*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1802",
+    "series_title": "GS-1802 Compliance Inspection and Support",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1805",
+    "series_title": "GS-1805 Investigative Analysis Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1810",
+    "series_title": "GS-1810 General Investigation",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1811",
+    "series_title": "GS-1811 Criminal Investigation*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1815",
+    "series_title": "Air Safety Investigating Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1822",
+    "series_title": "Mine Safety and Health Inspection Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1825",
+    "series_title": "Aviation Safety Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1849",
+    "series_title": "GS-1849 Wage and Hour Investigation Series*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1850",
+    "series_title": "GS-1850 Agricultural Warehouse Inspection Series *",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1860",
+    "series_title": "GS-1860 Equal Opportunity Investigation",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1862",
+    "series_title": "GS-1862 Consumer Safety Inspection*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1863",
+    "series_title": "Food Inspection Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1881",
+    "series_title": "Customs and Border Protection Interdiction Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1889",
+    "series_title": "GS-1889 Import Compliance Series*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1894",
+    "series_title": "GS-1894 Customs Entry and Liquidating*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1895",
+    "series_title": "Customs and Border Protection Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1896",
+    "series_title": "Border Patrol Enforcement Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1899",
+    "series_title": "GS-1899 Investigation Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "1910",
+    "series_title": "GS-1910 Quality Assurance*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1980",
+    "series_title": "GS-1980 Agricultural Commodity Grading*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1981",
+    "series_title": "GS-1981 Agricultural Commodity Aid*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "1999",
+    "series_title": "GS-1999 Quality Inspection Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "2001",
+    "series_title": "General Supply Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2003",
+    "series_title": "GS-2003 Supply Program Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2005",
+    "series_title": "GS-2005 Supply Clerical and Technician",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2010",
+    "series_title": "GS-2010 Inventory Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2030",
+    "series_title": "GS-2030 Distribution Facilities and Storage Management",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2032",
+    "series_title": "GS-2032 Packaging",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2050",
+    "series_title": "GS-2050 Supply Cataloging",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2091",
+    "series_title": "GS-2091 Sales Store Clerical",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2099",
+    "series_title": "GS-2099 Supply Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "2101",
+    "series_title": "GS-2101 Transportation Specialist*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2102",
+    "series_title": "GS-2102 Transportation Clerk and Assistant",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2110",
+    "series_title": "GS-2110 Transportation Industry Analysis*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2121",
+    "series_title": "Railroad Safety Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2123",
+    "series_title": "GS-2123 Motor Carrier Safety*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2125",
+    "series_title": "GS-2125 Highway Safety*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2130",
+    "series_title": "GS-2130 Traffic Management*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2131",
+    "series_title": "GS-2131 Freight Rate",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2135",
+    "series_title": "GS-2135 Transportation Loss and Damage Claims Examining",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2144",
+    "series_title": "GS-2144 Cargo Scheduling*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2150",
+    "series_title": "GS-2150 Transportation Operations*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2151",
+    "series_title": "GS-2151 Dispatching",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2152",
+    "series_title": "Air Traffic Control Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2154",
+    "series_title": "Air Traffic Assistance Series",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2161",
+    "series_title": "GS-2161 Marine Cargo*",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2181",
+    "series_title": "Aircraft Operation Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2183",
+    "series_title": "Air Navigation Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2185",
+    "series_title": "Aircrew Technician Series",
+    "tier": "none",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2199",
+    "series_title": "GS-2199 Transportation Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  },
+  {
+    "series_num": "2210",
+    "series_title": "GS-334 Computer Specialist* (Replaced by GS-2210)",
+    "tier": "optional",
+    "mandatory_type": ""
+  },
+  {
+    "series_num": "2299",
+    "series_title": "GS-2299 Information Technology Management Student Trainee",
+    "tier": "mandatory",
+    "mandatory_type": "qualification"
+  }
+]

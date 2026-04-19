@@ -176,13 +176,25 @@ def main():
                              "Run --collect later to get results.")
     parser.add_argument("--collect", action="store_true",
                         help="Collect results from submitted batch(es) using saved metadata")
+    parser.add_argument("--input", type=str,
+                        help="Override input parquet (default: data/2210_raw.parquet). "
+                             "When set, the 2210-specific historical merge is skipped.")
+    parser.add_argument("--output", type=str,
+                        help="Override output parquet path")
+    parser.add_argument("--cache", type=str,
+                        help="Override classification cache path")
     args = parser.parse_args()
 
+    input_path = Path(args.input) if args.input else INPUT
+    output_path = Path(args.output) if args.output else OUTPUT
+    cache_path = Path(args.cache) if args.cache else CACHE_FILE
+    is_custom_input = args.input is not None
+
     if args.verify:
-        if not OUTPUT.exists():
-            print(f"No output file at {OUTPUT}")
+        if not output_path.exists():
+            print(f"No output file at {output_path}")
             return
-        df = pd.read_parquet(OUTPUT)
+        df = pd.read_parquet(output_path)
         bad = verify_quotes(df)
         if len(bad) == 0:
             print(f"All {len(df)} quotes verified OK")
@@ -191,10 +203,11 @@ def main():
             print(bad.to_string(index=False))
         return
 
-    df = pd.read_parquet(INPUT)
-    df["data_source"] = "api"
-    print(f"Loaded {len(df)} jobs from {INPUT.name}")
-    if HISTORICAL_INPUT.exists():
+    df = pd.read_parquet(input_path)
+    if "data_source" not in df.columns:
+        df["data_source"] = "api"
+    print(f"Loaded {len(df)} jobs from {input_path.name}")
+    if not is_custom_input and HISTORICAL_INPUT.exists():
         hist = pd.read_parquet(HISTORICAL_INPUT)
         hist["data_source"] = "scraped"
         api_cns = set(df["usajobs_control_number"].astype(str))
@@ -220,7 +233,7 @@ def main():
         return
 
     items = df.to_dict(orient="records")
-    cache = load_cache(CACHE_FILE)
+    cache = load_cache(cache_path)
 
     # ── Batch API mode ────────────────────────────────────────────────
     if args.batch:
@@ -270,7 +283,7 @@ def main():
                 cached_indices=[],  # cached already filled above
                 cache=cache,
                 cache_key_fn=make_cache_key,
-                cache_path=CACHE_FILE,
+                cache_path=cache_path,
                 parse_fn=_parse_batch_response,
             )
             # Merge chunk results into main results
@@ -293,7 +306,7 @@ def main():
 
         # Any still-None are real failures
         all_failed = [i for i in range(len(results)) if results[i] is None]
-        _write_output(df, results, all_failed)
+        _write_output(df, results, all_failed, output_path)
         return
 
     # ── Real-time mode ────────────────────────────────────────────────
@@ -302,13 +315,13 @@ def main():
         process_fn=classify_one,
         cache=cache,
         cache_key_fn=make_cache_key,
-        cache_path=CACHE_FILE,
+        cache_path=cache_path,
         desc="Classifying",
     ))
-    _write_output(df, results, failed)
+    _write_output(df, results, failed, output_path)
 
 
-def _write_output(df, results, failed):
+def _write_output(df, results, failed, output_path=OUTPUT):
     if failed:
         print(f"\n{len(failed)} rows failed — dropping from output. Re-run to retry.")
         keep = [i not in set(failed) for i in range(len(df))]
@@ -317,8 +330,8 @@ def _write_output(df, results, failed):
 
     result_df = pd.DataFrame(results)
     out = pd.concat([df.reset_index(drop=True), result_df], axis=1)
-    out.to_parquet(OUTPUT, index=False)
-    print(f"\nWrote {len(out)} classified jobs to {OUTPUT}")
+    out.to_parquet(output_path, index=False)
+    print(f"\nWrote {len(out)} classified jobs to {output_path}")
     print(f"\n{out['edu_category'].value_counts().to_string()}")
 
     bad = verify_quotes(out)

@@ -27,6 +27,9 @@ def extract_fields(df: pd.DataFrame) -> pd.DataFrame:
         d = json.loads(row["MatchedObjectDescriptor"])
         details = d.get("UserArea", {}).get("Details", {})
         control = row.get("usajobsControlNumber") or row.get("usajobs_control_number", "")
+        hiring_path = details.get("HiringPath") or []
+        if not isinstance(hiring_path, list):
+            hiring_path = []
         records.append({
             "usajobs_control_number": str(control),
             "usajobs_url": f"https://www.usajobs.gov/job/{control}" if control else "",
@@ -42,6 +45,8 @@ def extract_fields(df: pd.DataFrame) -> pd.DataFrame:
             "close_date": row.get("positionCloseDate", ""),
             "service_type": row.get("serviceType", ""),
             "appointment_type": row.get("appointmentType", ""),
+            "hiring_path": hiring_path,
+            "is_public": "public" in hiring_path,
             "education": details.get("Education", ""),
             "qualification_summary": d.get("QualificationSummary", ""),
             "source_year": row["source_year"],
