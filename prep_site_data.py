@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from patch_classifications import apply_patches
+
 ROOT = Path(__file__).parent
 CLASSIFIED = ROOT / "data" / "2210_classified.parquet"
 YOE = ROOT / "data" / "2210_yoe.parquet"
@@ -28,6 +30,7 @@ SITE_COLUMNS = [
     "source_year",
     "edu_category",
     "edu_key_quote",
+    "edu_patch_reason",
     "data_source",
     "is_public",  # True=open to public, False=restricted, None=unknown (historical scraped)
     "yoe_categories",
@@ -37,6 +40,19 @@ SITE_COLUMNS = [
 
 def main():
     edu = pd.read_parquet(CLASSIFIED).drop_duplicates("usajobs_control_number", keep="first")
+    before_counts = edu["edu_category"].value_counts().to_dict()
+    patched = apply_patches(edu)
+    after_counts = patched["edu_category"].value_counts().to_dict()
+    n_patched = int((patched.get("edu_patch_reason", pd.Series("", index=patched.index)) != "").sum())
+    print(f"Applied patches.yaml: {n_patched} rows flipped")
+    if n_patched:
+        print(f"  before: {before_counts}")
+        print(f"  after:  {after_counts}")
+    # Persist the patched labels + tracking column back to disk. Patch
+    # rules key on current_category, so re-running is idempotent.
+    patched.to_parquet(CLASSIFIED, index=False)
+    print(f"Wrote patched parquet back to {CLASSIFIED.name} (tracking col: edu_patch_reason)")
+    edu = patched
     yoe = pd.read_parquet(YOE)[["usajobs_control_number", "yoe_categories", "yoe_quotes"]] \
         .drop_duplicates("usajobs_control_number", keep="first")
     meta = pd.read_parquet(HIST_META)[["usajobs_control_number", "is_public"]] \

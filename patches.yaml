@@ -1,0 +1,49 @@
+# Post-classification patches.
+#
+# Applied by patch_classifications.py. Each patch flips rows that match its
+# conditions to the category in `set`. Patches are idempotent and are
+# reapplied every time prep_site_data.py runs — no need to re-run the LLM.
+#
+# A patch has one of two shapes:
+#
+#   match:
+#     control_numbers: ["123", "456"]          # exact CN allowlist
+#   set: { edu_category: no_education }
+#
+# OR
+#
+#   match:
+#     current_category: education_required     # restrict to a starting cat
+#     text_any:                                # any one of these regex
+#       - '...'                                  must match the Education +
+#     text_none:                                 Qualifications text
+#       - '...'                                # none of these regex may match
+#   set: { edu_category: no_education }
+#
+# Regex is Python re, case-insensitive, searched against the combined
+# Education + QualificationSummary text.
+
+patches:
+  - name: no_substitution_template_at_high_grades
+    description: |
+      Rows labeled education_required whose text explicitly says "no
+      substitution of education for experience" and contains NO
+      mandatory-degree language. At GS-12+ OPM Alternative A blocks the
+      education path, so the model misread the Alt A boilerplate (which
+      covers lower grades this posting doesn't offer) as a degree mandate.
+      All flips go to no_education.
+    match:
+      current_category: education_required
+      text_any:
+        - 'no substitution of education for (?:specialized |the qualifying )?experience'
+        - 'education is not substitutable for (?:specialized )?experience'
+        - 'there is no substitution of education'
+      text_none:
+        - 'degree[^.\n]{0,80}(?:is )?mandatory'
+        - "must (?:possess|have|hold) (?:a )?(?:bachelor|master|doctoral|ph\\.?d|advanced) (?:'?s )?degree"
+        - 'mandatory[^.\n]{0,80}(?:bachelor|master|doctoral|degree)'
+        - 'positive education requirement'
+        - 'basic requirements?:[^.\n]{0,50}(?:bachelor|master|doctoral|ph\.?d)'
+        - 'juris doctor|j\.?d\.? (?:is )?required'
+    set:
+      edu_category: no_education
