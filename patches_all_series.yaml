@@ -1,0 +1,115 @@
+# Post-classification patches for the all-series (sample) pipeline.
+#
+# Applied by patch_classifications.py via prep_all_series_site_data.py.
+# Same schema as patches.yaml (the 2210 file). See that file for format.
+#
+# Start here when adding a fix:
+#   1. Read the actual posting on usajobs.gov to confirm the call.
+#   2. Add the CN under the right target-category block with a one-line
+#      justification inline.
+#   3. Run prep_all_series_site_data.py to materialize.
+#
+# The 2210-tuned prompt has known failure modes outside 2210:
+#   - Licensed-credential series (RDN, RN, licensed psychologist) where
+#     the posting names a credential that itself requires a degree — the
+#     model doesn't know the credential implies a degree and under-
+#     classifies as no_education.
+#   - Scraped postings with minimal Qualifications text (truncation or
+#     redirect pages) — classifier sees noise, not a real posting.
+#   - HS-diploma postings (blue-collar series) where "must have HS
+#     diploma" gets misread as education_required.
+#
+# These patterns warrant hand-verified CN entries, not regex.
+
+patches:
+  - name: archived_posting_stub
+    description: |
+      Postings whose historical page is just "refer to the original job
+      posting" — USAJobs served a stub without the original qualification
+      text. Not a classifier bug; the posting has no classifiable content.
+    match:
+      control_numbers:
+        # Army Operations Research Analyst — 98 chars of qual text total,
+        # all boilerplate "refer to the original posting".
+        - "708209300"
+    set:
+      edu_category: not_a_posting
+
+  - name: professional_credential_degree
+    description: |
+      Professional/licensure series (VA, IHS, etc.) where the posting's
+      Basic Requirements either (a) name a credential that itself requires
+      a degree (RDN, etc.) or (b) link to the external OPM qualification
+      standard instead of inlining the degree requirement. The 2210-tuned
+      prompt doesn't know the credential implies a degree and doesn't
+      follow the link, so it misclassifies as no_education based on the
+      inline text it can see.
+    match:
+      control_numbers:
+        # VA Supervisory Dietitian — Basic Requirement says "All
+        # applicants must hold the RDN credential from the Commission on
+        # Dietetic Registration." RDN requires a bachelor's+.
+        - "710410900"
+        # IHS Behavioral Health Director (0180 Psychology) — Qual text
+        # has "BASIC REQUIREMENT(S): OPM Link: Psychology Series 0180"
+        # (links out to the Ph.D. requirement instead of inlining).
+        - "738816300"
+        # IHS Nurse Specialist (0610 Nursing) — same pattern, Qual text
+        # has "BASIC REQUIREMENT(S):" linked to the nurse-series OPM
+        # qualification standard.
+        - "709117300"
+        # VA Dietitian (Facility Program Coordinator), GS-12 — Basic Req
+        # requires RDN/RD credential; specialized experience at GS-12 is
+        # IN ADDITION to basic requirements (no OR/substitution).
+        - "698068400"
+    set:
+      edu_category: education_required
+
+  - name: attorney_jd_degree_misread
+    description: |
+      0905 Attorney Series postings where the posting text explicitly
+      requires a J.D. / LL.B. but the classifier misread experience
+      language (either as no_education when the JD clause was in a
+      separate section, or as education_substitutable when both JD and
+      experience were required with no OR). All flips go to
+      education_required. (Applied only to postings where we verified
+      the JD requirement is visible in the scraped text.)
+    match:
+      control_numbers:
+        # OCR Supervisory General Attorney, GS-15 — quals say "graduate
+        # from a law school accredited by the ABA... AND Proof of
+        # admission to the Bar" (JD mandatory).
+        - "709157300"
+        # EEOC Supervisory Attorney Examiner, GS-14 — "must have earned
+        # a professional law degree (J.D. or LL.B.)... AND three years
+        # of professional legal experience" (no OR between the two).
+        - "730894100"
+    set:
+      edu_category: education_required
+
+  - name: basic_req_has_or_path_misread_as_no_education
+    description: |
+      OPM-mandatory series whose Basic Requirement section offers three
+      alternatives (A. Degree OR B. Combination OR C. N years Experience),
+      but the posting ALSO says "no substitution of education for
+      specialized experience at this grade level" for the grade-specific
+      specialization. The model reads the no-substitution line and
+      calls the whole posting no_education, missing that the Basic Req
+      allows education OR experience as paths to qualify. The right call
+      is education_substitutable.
+    match:
+      control_numbers:
+        # Pretrial Services Agency, 0101 GS-13 — Basic Req: degree OR
+        # combination OR four years experience
+        - "729081700"
+        # Army Community Services, 0101 GS-13 — Basic Req: A/B/C with
+        # experience option
+        - "817779900"
+        # USACE Architect/Interdisciplinary, 0810 GS-12 — Basic Req:
+        # degree OR education+experience combination
+        - "807888800"
+        # USACE Fire Protection Engineering, 0804 GS-13 — Basic Req:
+        # degree OR combination
+        - "778072900"
+    set:
+      edu_category: education_substitutable

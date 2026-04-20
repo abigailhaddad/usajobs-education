@@ -77,14 +77,19 @@ def _rows_matching(df: pd.DataFrame, patch: dict) -> pd.Index:
 
 
 def apply_patches(df: pd.DataFrame, patches_path: Path = DEFAULT_PATCHES) -> pd.DataFrame:
-    """Return a copy of df with patches applied. Safe to call repeatedly."""
-    patches = _load_patches(patches_path)
-    if not patches:
-        return df.copy()
+    """Return a copy of df with patches applied. Safe to call repeatedly.
 
+    Always ensures the edu_patch_reason tracking column exists so callers
+    can include it in downstream schemas without worrying about empty
+    patch files.
+    """
     out = df.copy()
     if "edu_patch_reason" not in out.columns:
         out["edu_patch_reason"] = ""
+
+    patches = _load_patches(patches_path)
+    if not patches:
+        return out
 
     for patch in patches:
         name = patch.get("name", "<unnamed>")

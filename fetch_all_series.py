@@ -38,6 +38,7 @@ REPO = Path(__file__).parent
 DATA_DIR = REPO / "data"
 TIERS_PATH = REPO / "opm_series_tiers.json"
 OUTPUT = DATA_DIR / "all_series_raw.parquet"
+SCRAPE_CACHE = DATA_DIR / "all_series_scrape_cache.json"
 
 HISTORICAL_YEARS = [2023, 2024, 2025, 2026]
 CURRENT_YEARS = [2024, 2025, 2026]
@@ -45,10 +46,24 @@ CURRENT_YEARS = [2024, 2025, 2026]
 RE_SERIES = re.compile(r'"series":\s*"(\d{4})"')
 
 
-def load_parquet(url: str) -> pd.DataFrame:
-    print(f"  {url.rsplit('/', 1)[-1]}")
-    raw = http_fetch(url)
-    return pd.read_parquet(io.BytesIO(raw))
+def load_parquet(url: str, attempts: int = 4, timeout: int = 300) -> pd.DataFrame:
+    """Download + parse a parquet. The R2 current_jobs files are ~150MB, so
+    a generous timeout + a few retries avoid aborting the whole run on a
+    transient network hiccup."""
+    name = url.rsplit("/", 1)[-1]
+    print(f"  {name}")
+    last_exc: Exception | None = None
+    for i in range(1, attempts + 1):
+        try:
+            raw = http_fetch(url, timeout=timeout)
+            return pd.read_parquet(io.BytesIO(raw))
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            last_exc = e
+            wait = min(2 ** i, 30)
+            print(f"    attempt {i}/{attempts} failed: {type(e).__name__}: {e}. retrying in {wait}s")
+            time.sleep(wait)
+    assert last_exc is not None
+    raise last_exc
 
 
 def load_gs_series() -> dict[str, dict]:
@@ -185,17 +200,37 @@ def meta_to_row(meta: pd.Series, gs_series: dict, education: str,
     }
 
 
+def load_scrape_cache() -> dict[str, dict]:
+    if not SCRAPE_CACHE.exists():
+        return {}
+    try:
+        return json.loads(SCRAPE_CACHE.read_text())
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def save_scrape_cache(cache: dict[str, dict]) -> None:
+    SCRAPE_CACHE.write_text(json.dumps(cache))
+
+
 def scrape_sample(sample: pd.DataFrame, current_content: dict[str, dict],
-                  gs_series: dict, delay: float, timeout: int) -> list[dict]:
+                  gs_series: dict, delay: float, timeout: int,
+                  cache_every: int = 50) -> list[dict]:
     rows: list[dict] = []
     errors = 0
     error_samples: list[str] = []
     n_api = 0
-    n_scraped = 0
+    n_scraped_fresh = 0
+    n_scraped_cached = 0
+
+    scrape_cache = load_scrape_cache()
+    initial_cache_size = len(scrape_cache)
+    print(f"  scrape cache: {initial_cache_size} CNs already cached")
 
     pbar = tqdm(sample.iterrows(), total=len(sample), unit="job")
     for i, (_, meta) in enumerate(pbar):
         cn = str(meta["usajobsControlNumber"])
+        # Prefer current_jobs API content — always fresher than cache.
         if cn in current_content:
             c = current_content[cn]
             rows.append(meta_to_row(meta, gs_series, c["education"],
@@ -203,29 +238,53 @@ def scrape_sample(sample: pd.DataFrame, current_content: dict[str, dict],
             n_api += 1
             continue
 
+        # Cache hit: reuse scraped text.
+        if cn in scrape_cache:
+            c = scrape_cache[cn]
+            rows.append(meta_to_row(meta, gs_series, c.get("education", ""),
+                                    c.get("qualifications", ""), "scraped"))
+            n_scraped_cached += 1
+            continue
+
+        # Cache miss: hit usajobs.gov.
         try:
             html = http_fetch(f"https://www.usajobs.gov/job/{cn}", timeout=timeout).decode(
                 "utf-8", "replace"
             )
             sec = extract_sections(html)
+            scrape_cache[cn] = {
+                "education": sec["education"],
+                "qualifications": sec["qualifications"],
+            }
             rows.append(meta_to_row(meta, gs_series, sec["education"],
                                     sec["qualifications"], "scraped"))
-            n_scraped += 1
+            n_scraped_fresh += 1
         except urllib.error.HTTPError as e:
             errors += 1
             if len(error_samples) < 10:
                 error_samples.append(f"{cn}: HTTP {e.code}")
             if e.code in (404, 410):
+                # Cache the "gone" result too so we don't re-hit.
+                scrape_cache[cn] = {"education": "", "qualifications": ""}
                 rows.append(meta_to_row(meta, gs_series, "", "", "scraped"))
         except Exception as e:
             errors += 1
             if len(error_samples) < 10:
                 error_samples.append(f"{cn}: {type(e).__name__}: {e}")
+            # Transient — don't cache, let the next run retry.
+
+        if n_scraped_fresh and n_scraped_fresh % cache_every == 0:
+            save_scrape_cache(scrape_cache)
 
         if delay:
             time.sleep(delay)
 
-    print(f"\n  {n_api} from current_jobs API, {n_scraped} scraped, {errors} errors")
+    save_scrape_cache(scrape_cache)
+    print(f"\n  {n_api} from current_jobs API, "
+          f"{n_scraped_cached} from scrape cache, "
+          f"{n_scraped_fresh} fresh scraped, {errors} errors")
+    print(f"  scrape cache now: {len(scrape_cache)} CNs "
+          f"(+{len(scrape_cache) - initial_cache_size} this run)")
     if error_samples:
         print("  First errors:")
         for s in error_samples:
@@ -254,7 +313,10 @@ def main():
     n = min(args.sample_size, len(universe))
     print(f"\nSampling {n} rows (random_state={args.seed}) — "
           f"proportional to (series × year) by construction")
-    sample = universe.sample(n=n, random_state=args.seed).reset_index(drop=True)
+    # Shuffle once and take head(N) so that growing the sample size is a
+    # strict superset of the previous run — maximizes scrape-cache reuse.
+    shuffled = universe.sample(frac=1.0, random_state=args.seed).reset_index(drop=True)
+    sample = shuffled.head(n).reset_index(drop=True)
 
     by_year = sample["source_year"].value_counts().sort_index()
     n_series = sample["series_num"].nunique()
