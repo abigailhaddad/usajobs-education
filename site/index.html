@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css">
 <style>
 :root {
   --bg: #FFF8F0;
@@ -59,10 +58,32 @@ a { color: var(--primary); } a:hover { color: var(--primary-hover); }
 .dept-jobs a { display: block; margin: 0.25rem 0; }
 .dept-jobs .dept-jobs-header { font-weight: 600; margin-bottom: 0.5rem; }
 
-.filter-bar { margin: 1.5rem 0 1rem; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
-.filter-bar select, .filter-bar input { padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; }
-.filter-bar input { width: 250px; }
-.filter-bar .clear-btn { background: none; border: none; color: var(--primary); font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
+.filter-bar { margin: 1.5rem 0 1rem; display: flex; gap: 0.75rem; align-items: flex-start; flex-wrap: wrap; }
+.filter-bar > select, .filter-bar > input { padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; }
+.filter-bar > input { flex: 1 1 220px; min-width: 200px; max-width: 280px; }
+.filter-bar .clear-btn { background: none; border: none; color: var(--primary); font-size: 0.85rem; cursor: pointer; text-decoration: underline; align-self: center; }
+.filter-bar #audienceFilter { flex: 0 1 200px; min-width: 180px; height: 38px; }
+
+/* Checkbox multi-select dropdown */
+.ms-dropdown { position: relative; flex: 1 1 240px; min-width: 220px; }
+.ms-dropdown[data-key="dept"] { flex: 1 1 320px; min-width: 260px; }
+.ms-toggle { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; padding: 0.4rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; height: 38px; cursor: pointer; text-align: left; }
+.ms-toggle:hover { border-color: var(--primary); }
+.ms-toggle.ms-active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.15); }
+.ms-toggle .ms-label-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-toggle .ms-caret { color: var(--text-muted); font-size: 0.75rem; }
+.ms-panel { position: absolute; top: calc(100% + 4px); left: 0; min-width: 280px; max-width: min(420px, calc(100vw - 2rem)); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); z-index: 20; padding: 0.5rem; }
+.ms-dropdown[data-key="dept"] .ms-panel { min-width: 340px; }
+.ms-controls { display: flex; gap: 0.75rem; padding: 0.25rem 0.5rem 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 0.4rem; }
+.ms-controls button { background: none; border: none; color: var(--primary); font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0; font-family: inherit; }
+.ms-controls button:hover { color: var(--primary-hover); }
+.ms-search { width: 100%; padding: 0.35rem 0.6rem; margin-bottom: 0.4rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); font-size: 0.85rem; font-family: inherit; }
+.ms-options { max-height: 260px; overflow-y: auto; }
+.ms-option { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.88rem; line-height: 1.3; }
+.ms-option:hover { background: var(--surface); }
+.ms-option input[type="checkbox"] { accent-color: var(--primary); width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
+.ms-option[hidden] { display: none; }
+.ms-empty { padding: 0.75rem 0.5rem; color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
 .active-filters { margin: 0.5rem 0 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
 .active-filters:empty { display: none; }
 .active-filters .af-label { color: var(--text-muted); font-size: 0.85rem; }
@@ -127,8 +148,10 @@ table.dataTable tbody tr:hover { background: var(--border) !important; }
 
   /* Filter bar: stack controls */
   .filter-bar { gap: 0.5rem; }
-  .filter-bar input { width: 100%; }
-  .filter-bar select, .filter-bar input { flex: 1 1 calc(50% - 0.25rem); font-size: 0.9rem; }
+  .filter-bar > input { width: 100%; max-width: none; }
+  .filter-bar > select, .filter-bar > input, .filter-bar > .ms-dropdown { flex: 1 1 100%; min-width: 0; font-size: 0.9rem; }
+  .filter-bar .ms-dropdown[data-key="dept"] { flex: 1 1 100%; min-width: 0; }
+  .filter-bar .ms-panel { min-width: 0; max-width: calc(100vw - 2rem); left: 0; right: auto; }
 
   /* Methodology/padding */
   .methodology { padding: 1rem 1.25rem; }
@@ -186,11 +209,11 @@ table.dataTable tbody tr:hover { background: var(--border) !important; }
   <p class="subtitle" style="font-size:0.9rem;margin-bottom:0.5rem;">Tap or hover any Education/Experience badge to see the verbatim quote from the posting that drove the classification.</p>
   <div class="filter-bar">
     <input type="text" id="titleSearch" placeholder="Search titles...">
-    <select id="catFilter" multiple></select>
-    <select id="yoeFilter" multiple></select>
+    <div id="catFilter" class="ms-dropdown" data-key="cat"></div>
+    <div id="yoeFilter" class="ms-dropdown" data-key="yoe"></div>
     <select id="audienceFilter"><option value="">All postings</option><option value="public">Open to the Public</option><option value="internal">Internal (fed only)</option></select>
-    <select id="deptFilter" multiple></select>
-    <select id="yearFilter" multiple></select>
+    <div id="deptFilter" class="ms-dropdown" data-key="dept"></div>
+    <div id="yearFilter" class="ms-dropdown" data-key="year"></div>
     <button class="clear-btn" id="clearFilters">Clear filters</button>
   </div>
 
@@ -219,7 +242,6 @@ table.dataTable tbody tr:hover { background: var(--border) !important; }
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
 <script>
 const CAT_LABELS = {
   'no_education': 'Experience Only',
@@ -344,22 +366,17 @@ function buildPage(jobs) {
     });
   }
 
-  function removeFromChoice(selector, val) {
-    const inst = _choices[selector];
-    if (inst) inst.removeActiveItemsByValue(val);
-  }
-
   function clearOne(key, val) {
-    if (key==='cat') { activeCat = activeCat.filter(v => v!==val); removeFromChoice('#catFilter', val); }
-    if (key==='yoe') { activeYoe = activeYoe.filter(v => v!==val); removeFromChoice('#yoeFilter', val); }
-    if (key==='dept') { activeDept = activeDept.filter(v => v!==val); removeFromChoice('#deptFilter', val); }
-    if (key==='year') { activeYear = activeYear.filter(v => v!==val); removeFromChoice('#yearFilter', val); }
+    if (key==='cat') { activeCat = activeCat.filter(v => v!==val); _multiselects.cat?.uncheck(val); }
+    if (key==='yoe') { activeYoe = activeYoe.filter(v => v!==val); _multiselects.yoe?.uncheck(val); }
+    if (key==='dept') { activeDept = activeDept.filter(v => v!==val); _multiselects.dept?.uncheck(val); }
+    if (key==='year') { activeYear = activeYear.filter(v => v!==val); _multiselects.year?.uncheck(val); }
     if (key==='audience') { activeAudience=''; $('#audienceFilter').val(''); }
     if (key==='title') { activeTitleSearch=''; $('#titleSearch').val(''); }
     refresh();
   }
 
-  const _choices = {};
+  const _multiselects = {};
 
   function updateStats(filtered) {
     // Stat denominators exclude not_a_posting so percentages reflect real jobs.
@@ -370,7 +387,7 @@ function buildPage(jobs) {
     const cNoEdu = fcats.no_education||0;
     const cSub = fcats.education_substitutable||0;
     const cReq = fcats.education_required||0;
-    const pct = v => n ? Math.round((v/n)*100) : 0;
+    const pct = v => n ? ((v/n)*100).toFixed(1) : '0.0';
     const label = n === total ? 'Total 2210 Postings' : `Filtered (of ${total.toLocaleString()})`;
     document.getElementById('stats').innerHTML = `
       <div class="stat-card"><div class="number">${n.toLocaleString()}</div><div class="label">${label}</div></div>
@@ -444,29 +461,15 @@ function buildPage(jobs) {
     if (j.department) deptSet.add(j.department);
     yearSet.add(j.source_year);
   });
-  [...catSet].sort().forEach(c => $('#catFilter').append(`<option value="${c}">${CAT_LABELS[c]||c}</option>`));
-  [...yoeSet].sort().forEach(c => $('#yoeFilter').append(`<option value="${c}">${YOE_LABELS[c]||c}</option>`));
-  [...deptSet].sort().forEach(d => $('#deptFilter').append(`<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`));
-  [...yearSet].sort().forEach(y => $('#yearFilter').append(`<option value="${y}">${y}</option>`));
+  const catValues = [...catSet].sort().map(c => ({value: c, label: CAT_LABELS[c] || c}));
+  const yoeValues = [...yoeSet].sort().map(c => ({value: c, label: YOE_LABELS[c] || c}));
+  const deptValues = [...deptSet].sort().map(d => ({value: d, label: d}));
+  const yearValues = [...yearSet].sort().map(y => ({value: String(y), label: String(y)}));
 
-  // Wrap multi-select dropdowns with Choices.js for a searchable, chip-style UI
-  function makeChoices(selector, placeholder) {
-    const el = document.querySelector(selector);
-    const inst = new Choices(el, {
-      removeItemButton: true,
-      shouldSort: false,
-      placeholder: true,
-      placeholderValue: placeholder,
-      searchPlaceholderValue: 'Type to filter...',
-      allowHTML: false,
-    });
-    _choices[selector] = inst;
-    return inst;
-  }
-  makeChoices('#catFilter', 'All education categories');
-  makeChoices('#yoeFilter', 'All experience categories');
-  makeChoices('#deptFilter', 'All departments');
-  makeChoices('#yearFilter', 'All years');
+  _multiselects.cat  = createMultiSelect({ host: document.getElementById('catFilter'),  label: 'All education categories',  values: catValues,  onChange: v => { activeCat = v;  refresh(); }});
+  _multiselects.yoe  = createMultiSelect({ host: document.getElementById('yoeFilter'),  label: 'All experience categories', values: yoeValues,  onChange: v => { activeYoe = v;  refresh(); }});
+  _multiselects.dept = createMultiSelect({ host: document.getElementById('deptFilter'), label: 'All departments',            values: deptValues, onChange: v => { activeDept = v; refresh(); }});
+  _multiselects.year = createMultiSelect({ host: document.getElementById('yearFilter'), label: 'All years',                  values: yearValues, onChange: v => { activeYear = v; refresh(); }});
 
   // DataTable
   const tableData = jobs.map(j => {
@@ -514,24 +517,197 @@ function buildPage(jobs) {
     ]
   });
 
-  function valsOf(sel) {
-    const el = document.querySelector(sel);
-    return [...el.selectedOptions].map(o => o.value);
-  }
-  $('#catFilter').on('change', function() { activeCat = valsOf('#catFilter'); refresh(); });
-  $('#yoeFilter').on('change', function() { activeYoe = valsOf('#yoeFilter'); refresh(); });
-  $('#deptFilter').on('change', function() { activeDept = valsOf('#deptFilter'); refresh(); });
-  $('#yearFilter').on('change', function() { activeYear = valsOf('#yearFilter'); refresh(); });
+  // Multi-select onChange callbacks (set in createMultiSelect calls above) assign
+  // activeCat/activeYoe/activeDept/activeYear directly, so no jQuery change
+  // handler is needed on the dropdown hosts.
   $('#audienceFilter').on('change', function() { activeAudience = this.value; refresh(); });
   $('#titleSearch').on('input', function() { activeTitleSearch=this.value.toLowerCase(); refresh(); });
   $('#clearFilters').on('click', function() {
     activeCat = []; activeYoe = []; activeDept = []; activeYear = [];
     activeAudience = ''; activeTitleSearch='';
-    ['#catFilter','#yoeFilter','#deptFilter','#yearFilter'].forEach(s => _choices[s]?.removeActiveItems());
+    Object.values(_multiselects).forEach(ms => ms.clear());
     $('#audienceFilter').val('');
     $('#titleSearch').val('');
     refresh();
   });
+}
+
+// ---------------------------------------------------------------------------
+// Checkbox multi-select dropdown component
+// ---------------------------------------------------------------------------
+// Renders a toggle button + dropdown panel with Select-all / Clear-all links,
+// a search box, and a checkbox per option. Fires onChange(selectedArray) once
+// per user action (never per-item, even on Select-all).
+function createMultiSelect({ host, label, values, onChange }) {
+  const selected = new Set();
+  const total = values.length;
+
+  while (host.firstChild) host.removeChild(host.firstChild);
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'ms-toggle';
+  const labelEl = document.createElement('span');
+  labelEl.className = 'ms-label-text';
+  const caret = document.createElement('span');
+  caret.className = 'ms-caret';
+  caret.textContent = '▾';
+  toggle.appendChild(labelEl);
+  toggle.appendChild(caret);
+
+  const panel = document.createElement('div');
+  panel.className = 'ms-panel';
+  panel.setAttribute('hidden', '');
+
+  const controls = document.createElement('div');
+  controls.className = 'ms-controls';
+  const selectAllBtn = document.createElement('button');
+  selectAllBtn.type = 'button';
+  selectAllBtn.className = 'ms-select-all';
+  selectAllBtn.textContent = 'Select all';
+  const clearAllBtn = document.createElement('button');
+  clearAllBtn.type = 'button';
+  clearAllBtn.className = 'ms-clear-all';
+  clearAllBtn.textContent = 'Clear all';
+  controls.appendChild(selectAllBtn);
+  controls.appendChild(clearAllBtn);
+
+  const searchEl = document.createElement('input');
+  searchEl.type = 'text';
+  searchEl.className = 'ms-search';
+  searchEl.placeholder = 'Type to filter...';
+
+  const optsEl = document.createElement('div');
+  optsEl.className = 'ms-options';
+
+  panel.appendChild(controls);
+  panel.appendChild(searchEl);
+  panel.appendChild(optsEl);
+
+  host.appendChild(toggle);
+  host.appendChild(panel);
+
+  values.forEach(v => {
+    const wrap = document.createElement('label');
+    wrap.className = 'ms-option';
+    wrap.dataset.value = v.value;
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = v.value;
+    const txt = document.createElement('span');
+    txt.textContent = v.label;
+    wrap.appendChild(cb);
+    wrap.appendChild(txt);
+    optsEl.appendChild(wrap);
+  });
+
+  function syncLabel() {
+    const n = selected.size;
+    if (n === 0) labelEl.textContent = label;
+    else if (n === total) labelEl.textContent = `${label} (${n})`;
+    else labelEl.textContent = `${label.replace(/^All /, '')} (${n})`;
+  }
+  syncLabel();
+
+  function emit() { onChange([...selected]); }
+
+  optsEl.addEventListener('change', e => {
+    const cb = e.target;
+    if (cb.tagName !== 'INPUT') return;
+    if (cb.checked) selected.add(cb.value); else selected.delete(cb.value);
+    syncLabel();
+    emit();
+  });
+
+  selectAllBtn.addEventListener('click', () => {
+    let changed = false;
+    optsEl.querySelectorAll('.ms-option').forEach(opt => {
+      if (opt.hasAttribute('hidden')) return;
+      const cb = opt.querySelector('input');
+      if (!cb.checked) { cb.checked = true; selected.add(cb.value); changed = true; }
+    });
+    if (changed) { syncLabel(); emit(); }
+  });
+
+  clearAllBtn.addEventListener('click', () => {
+    if (!selected.size) return;
+    optsEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    selected.clear();
+    syncLabel();
+    emit();
+  });
+
+  searchEl.addEventListener('input', () => {
+    const q = searchEl.value.trim().toLowerCase();
+    let anyVisible = false;
+    optsEl.querySelectorAll('.ms-option').forEach(opt => {
+      const match = !q || opt.textContent.toLowerCase().includes(q);
+      if (match) { opt.removeAttribute('hidden'); anyVisible = true; }
+      else opt.setAttribute('hidden', '');
+    });
+    let empty = optsEl.querySelector('.ms-empty');
+    if (!anyVisible) {
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.className = 'ms-empty';
+        empty.textContent = 'No matches';
+        optsEl.appendChild(empty);
+      }
+    } else if (empty) {
+      empty.remove();
+    }
+  });
+
+  function open() {
+    document.querySelectorAll('.ms-panel:not([hidden])').forEach(p => {
+      if (p !== panel) p.setAttribute('hidden', '');
+    });
+    document.querySelectorAll('.ms-toggle.ms-active').forEach(t => {
+      if (t !== toggle) t.classList.remove('ms-active');
+    });
+    panel.removeAttribute('hidden');
+    toggle.classList.add('ms-active');
+    setTimeout(() => searchEl.focus(), 0);
+  }
+  function close() {
+    panel.setAttribute('hidden', '');
+    toggle.classList.remove('ms-active');
+  }
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    if (panel.hasAttribute('hidden')) open(); else close();
+  });
+  document.addEventListener('click', e => {
+    if (!host.contains(e.target) && !panel.hasAttribute('hidden')) close();
+  });
+  panel.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { close(); toggle.focus(); }
+  });
+
+  return {
+    getSelected: () => [...selected],
+    setSelected: (vals) => {
+      selected.clear();
+      vals.forEach(v => selected.add(v));
+      optsEl.querySelectorAll('input[type=checkbox]').forEach(cb => {
+        cb.checked = selected.has(cb.value);
+      });
+      syncLabel();
+    },
+    uncheck: (val) => {
+      if (!selected.has(val)) return;
+      selected.delete(val);
+      const cb = optsEl.querySelector(`input[value="${CSS.escape(val)}"]`);
+      if (cb) cb.checked = false;
+      syncLabel();
+    },
+    clear: () => {
+      if (!selected.size) return;
+      selected.clear();
+      optsEl.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+      syncLabel();
+    },
+  };
 }
 </script>
 </body>
