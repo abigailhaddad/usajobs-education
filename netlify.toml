@@ -1,7 +1,9 @@
 [build]
   command = "echo 'static site'"
   publish = "site"
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- site/"
+  # No `ignore` rule: it canceled real builds with "no content change" when a
+  # prior errored/canceled deploy had already advanced the cached commit ref.
+  # The build is a 2s static publish, so always building is simpler + reliable.
 
 [[headers]]
   for = "/*"
