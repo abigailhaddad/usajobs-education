@@ -84,6 +84,7 @@ a { color: var(--primary); } a:hover { color: var(--primary-hover); }
 .filter-option:hover { background: var(--surface); }
 .filter-option input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; flex: none; }
 .filter-option .opt-count { color: var(--text-muted); font-size: 0.78rem; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+.filter-selectall { border-bottom: 1px solid var(--border); border-radius: 0; margin-bottom: 4px; }
 .filter-buttons { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 0.9rem; }
 .btn-clear { border: 1px solid var(--border); background: #fff; color: var(--text-muted); padding: 0.45rem 0.9rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
 .btn-clear:hover { border-color: var(--primary); color: var(--primary); }
@@ -523,14 +524,28 @@ function buildPage(jobs) {
       `<label class="filter-option"><input type="checkbox" value="${escapeHtml(v)}"${selected.includes(v)?' checked':''}> <span>${escapeHtml((d.labels&&d.labels[v])||v)}</span><span class="opt-count">${counts[v]}</span></label>`).join('');
     const m = createModal(`<div class="filter-popover"><div class="filter-title">Filter: ${escapeHtml(d.name)}</div>
       <input type="text" class="filter-search-input" placeholder="Search options…">
+      <label class="filter-option filter-selectall"><input type="checkbox" class="selectall-cb"> <strong>Select all</strong></label>
       <div class="filter-options">${opts}</div>
       <div class="filter-buttons"><button class="btn-clear">Clear</button><button class="btn-apply">Apply</button></div></div>`);
     const search = m.querySelector('.filter-search-input'); search.focus();
+    const optsBox = m.querySelector('.filter-options');
+    const selectAll = m.querySelector('.selectall-cb');
+    const visibleBoxes = () => [...optsBox.querySelectorAll('.filter-option')]
+      .filter(o => o.style.display !== 'none').map(o => o.querySelector('input'));
+    const syncSelectAll = () => {
+      const vis = visibleBoxes(); const n = vis.filter(cb => cb.checked).length;
+      selectAll.checked = vis.length > 0 && n === vis.length;
+      selectAll.indeterminate = n > 0 && n < vis.length;
+    };
     search.addEventListener('input', () => { const q = search.value.toLowerCase();
-      m.querySelectorAll('.filter-option').forEach(o => { o.style.display = o.textContent.toLowerCase().includes(q) ? '' : 'none'; }); });
+      optsBox.querySelectorAll('.filter-option').forEach(o => { o.style.display = o.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+      syncSelectAll(); });
+    optsBox.addEventListener('change', syncSelectAll);
+    selectAll.addEventListener('change', function() { visibleBoxes().forEach(cb => { cb.checked = this.checked; }); });
+    syncSelectAll();
     m.querySelector('.btn-clear').addEventListener('click', () => { d.set([]); closeModal(m); refresh(); });
     m.querySelector('.btn-apply').addEventListener('click', () => {
-      d.set([...m.querySelectorAll('.filter-options input:checked')].map(i => i.value)); closeModal(m); refresh(); });
+      d.set([...optsBox.querySelectorAll('input:checked')].map(i => i.value)); closeModal(m); refresh(); });
   }
 
   function openSingle(d) {
