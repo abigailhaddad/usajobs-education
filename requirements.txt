@@ -1,6 +1,6 @@
 pandas
 pyarrow
-litellm
+litellm==1.106.2
 pydantic
 python-dotenv
 tqdm
