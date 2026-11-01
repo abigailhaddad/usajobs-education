@@ -100,3 +100,241 @@ patches:
         - 'juris doctor|j\.?d\.? (?:is )?required'
     set:
       edu_category: no_education
+
+  # ── Identical text, one label (2026-11-01) ────────────────────────────
+  # 31 groups of postings (87 CNs) had byte-identical Education +
+  # QualificationSummary text but different labels from the LLM. Each group
+  # was read in full and given one label by the category definitions
+  # published on the site (site/index.html, "Categories"), which match the
+  # classifier prompt in config.yaml. Every CN in a group is listed, including
+  # the ones the LLM already had right, so the group stays consistent if the
+  # LLM is re-run. Last in the file so no earlier rule overrides them.
+  #
+  # "Degree OR equivalent experience/combination" together with a minimum
+  # number of years of experience required from everyone is ruled no_education
+  # here: experience can replace the degree, but a degree alone never gets you
+  # in, which is the site's definition of "Experience Only". ~245 other rows
+  # with that wording are labeled education_substitutable, as is the
+  # 844991500 patch above; that is a known inconsistency to review separately,
+  # not settled by these patches.
+
+  - name: identical_text_to_no_education
+    description: |
+      One label per group of identical posting text. Experience is required at every grade and a degree alone never qualifies (site: "Experience Only").
+    match:
+      control_numbers:
+        # G1 INFORMATION TECHNOLOGY SPECIALIST (ENTARCH) (Department of the Navy):
+        # CES "bachelor's degree or equivalent experience" minimum, but the
+        # qualifications require IT experience and directly applicable experience
+        # from every applicant; a degree alone does not qualify
+        - "841420800"
+        - "842045900"
+        # G2 Deputy Assistant Administrator Information Systems Division (Department
+        # of Justice): real SES announcement (ECQs/TQs), not a placeholder;
+        # education only "Desired ... or equivalent experience"
+        - "845720600"
+        - "856448800"
+        # G3 SUPV IT SPECIALIST (PLCYPLN) (TITLE 32) (Department of the Air Force):
+        # general + one year specialized experience at GS-12 required; Education
+        # field is transcript boilerplate only
+        - "849347800"
+        - "852172000"
+        # G4 IT SPECIALIST (PLCYPLN/INFOSEC) (Department of the Air Force): GG-13:
+        # one year of specialized experience required (OPM 2210 Alt A at grade 13
+        # has no education path); Education field holds only an OPM link and
+        # conditions of employment
+        - "862689900"
+        - "863053200"
+        # G5 Senior IT Manager #404 (Senate): "Bachelor's ... and eight to ten years
+        # of experience ...; or any equivalent combination of education and
+        # experience": experience can replace the degree, a degree alone never
+        # qualifies
+        - "699796000"
+        - "709925400"
+        # G6 INFORMATION TECHNOLOGY SPECIALIST (INFOSEC/SYSADMIN) (Air Force
+        # Materiel Command): one year specialized experience at GS-11 required;
+        # Education field is transcript/accreditation boilerplate
+        - "708422800"
+        - "715082100"
+        - "770495800"
+        # G7 Network Systems Engineer, Senior (House of Representatives):
+        # "Bachelor's degree ... or equivalent work experience" plus a separate
+        # "Minimum 5 years of experience"; a degree alone does not qualify
+        - "717125500"
+        - "732199100"
+        - "732211700"
+        # G8 IT SPECIALIST (APPSW) (Naval Supply Systems Command): "This job does
+        # not have an education qualification requirement"; specialized experience
+        # at GS-11 required
+        - "718678500"
+        - "827535500"
+        # G9 IT SPECIALIST (INFOSEC) (Air Force Materiel Command): one year
+        # specialized experience at GS-12 required; Education field is
+        # transcript/accreditation boilerplate
+        - "722294800"
+        - "722378200"
+        # G12 MANAGER/MANAGER IT SPECIALIST (PLCYPLN/INFOSEC)- CYBER SECURITY
+        # DEPARTMENT HEAD (Commander, Naval Information Warfare Systems Command
+        # (NAVWARSYSCOM)): interdisciplinary 0801/1550/2210; the 2210 track requires
+        # only one year of specialized experience at GS-13/DP-03, so the degree is
+        # not mandatory, and no track lets a degree alone qualify
+        - "755032900"
+        - "755034300"
+        # G13 ODNI CIO Contracts/COTR (Office of the Director of National
+        # Intelligence): bachelor's degree is listed under "Desired Requirements"
+        - "759812500"
+        - "759814400"
+        - "759816200"
+        # G14 INFORMATION TECHNOLOGY (IT) SPECIALIST (Commander, Navy
+        # Installations): Education field is transcript/OPM-substitution
+        # boilerplate; no degree offered as an alternative in the qualifications
+        - "762146300"
+        - "779378900"
+        # G15 IT PROJECT MANAGER (Consumer Product Safety Commission): the
+        # "mandatory education requirement" is a certification (PMP / FAC-P/PM), not
+        # a degree; 52 weeks specialized experience required
+        - "763042100"
+        - "763494200"
+        # G22 IT SPECIALIST (INFOSEC)-DIRECT HIRE AUTHORITY (nan): one year
+        # specialized experience at DO-01/GS-11 required; Education field is
+        # transcript/accreditation boilerplate
+        - "790592100"
+        - "790600600"
+        # G23 IT SPECIALIST (CUSTOMER SUPPORT) (TITLE 32) (Air National Guard
+        # Units): "Education Requirements" is CompTIA Security+ certification, not a
+        # degree; specialized experience required
+        - "798461600"
+        - "801714200"
+        # G24 INFORMATION TECHNOLOGY SPECIALIST (ENTARCH) (U.S. Marine Corps): CES
+        # "bachelor's degree or equivalent experience" minimum, but applicants must
+        # have directly applicable experience; a degree alone does not qualify
+        - "799132600"
+        - "799240500"
+        # G25 IT PM for CI-Focused IT Systems (Office of the Director of National
+        # Intelligence): "At least five years of expert-level program or project
+        # management experience" required; degree is "or equivalent experience"
+        - "802773600"
+        - "802794600"
+        # G26 IT CYBERSECURITY SPECIALIST (INFOSEC) (U.S. Marine Corps): CES
+        # "bachelor's degree or equivalent experience" minimum, but IT experience
+        # and directly applicable experience required from every applicant
+        - "811430600"
+        - "811430700"
+        - "815154000"
+        # G27 Security Control Assessor (SCA) (Naval Supply Systems Command): degree
+        # "preferred"; education can substitute only for the 3 years of general
+        # experience, and 5 years of specialized experience are required from
+        # everyone
+        - "817613600"
+        - "817614100"
+        # G28 Information System Security Manager (ISSM) NF5 (U.S. Marine Corps):
+        # "Bachelors' Degree ... AND seven years of experience ...: OR an
+        # appropriate combination ... OR appropriate experience": experience can
+        # replace the degree, a degree alone never qualifies
+        - "819164000"
+        - "825846700"
+        # G29 PeopleSoft Senior Developer (U.S. Marine Corps): "Bachelor's degree
+        # ... or an appropriate combination of education and experience" plus "Six
+        # years of progressive experience" required
+        - "829914400"
+        - "834567600"
+        # G30 IT Specialist (SYS ANALYSIS) (Federal Emergency Management Agency):
+        # "positive education requirement" is asserted but no degree requirement
+        # appears in the posting; one year specialized experience at GS-13 required
+        - "832134300"
+        - "832155300"
+    set:
+      edu_category: no_education
+
+  - name: identical_text_to_education_substitutable
+    description: |
+      One label per group of identical posting text. The degree is offered as an alternative to experience (site: "Degree is One Path").
+    match:
+      control_numbers:
+        # G10 Cyber Assessment Lead (Office of the Director of National
+        # Intelligence): "Degree in [IT fields] ... 24 semester hours ...; or,
+        # equivalent relevant work experience" with no separate years-of-experience
+        # minimum: degree and experience are alternatives
+        - "743247000"
+        - "743248500"
+        - "743252900"
+    set:
+      edu_category: education_substitutable
+
+  - name: identical_text_to_education_required
+    description: |
+      One label per group of identical posting text. A degree is stated with no experience-only alternative (site: "Degree Required").
+    match:
+      control_numbers:
+        # G11 Chief of IT Solutions Delivery (Office of the Director of National
+        # Intelligence): "Mandatory Requirements: Must have a degree in ..." plus
+        # one year specialized and four years PM experience, no OR linking them
+        # (cumulative)
+        - "744537700"
+        - "744548900"
+        # G16 Project Manager (Contracting Officer Technical Representative and
+        # Human Resource Specialist) (Office of the Director of National
+        # Intelligence): "Bachelor's degree in Business, Public Administration,
+        # Finance or Accounting" listed with the mandatory requirements alongside
+        # 3-5 years experience, no OR (cumulative)
+        - "767459900"
+        - "767460500"
+        # G17 Senior Level Information Security Architect (Patent and Trademark
+        # Office): "a minimum educational requirement for this position is
+        # Bachelor's ... is required" plus experience PTQs, no OR
+        - "781078000"
+        - "781078100"
+        # G20 Architecture Development Specialist (Office of the Director of
+        # National Intelligence): Education field "Bachelor's Degree" with no
+        # alternative anywhere in the posting
+        - "784120300"
+        - "792806600"
+        # G21 Architecture Development Division Chief (Office of the Director of
+        # National Intelligence): Education field "Bachelor's degree." plus one year
+        # specialized and four years PM experience, no OR (cumulative)
+        - "788252400"
+        - "788253100"
+        # G31 Systems Engineer (House of Representatives): "Bachelor's degree ...
+        # with a total of 10 years of experience" and 5 years SAN/NAS, no OR
+        # (cumulative)
+        - "834853100"
+        - "835627900"
+    set:
+      edu_category: education_required
+
+  - name: identical_text_to_not_a_posting
+    description: |
+      One label per group of identical posting text. The text is a test or a placeholder with no requirements in it.
+    match:
+      control_numbers:
+        # G18 2WF Interdisciplinary 0346 Core (Office of Personnel Management):
+        # entire posting text is "Testing USA Hire batteries." -- a test, not a job
+        - "783434600"
+        - "783547000"
+        - "801910100"
+        - "801910800"
+        - "786519400"
+        - "836317700"
+        - "837403700"
+        - "838018200"
+        - "846656200"
+        - "846656500"
+        - "846657300"
+        - "846657900"
+        - "857211200"
+        - "857212400"
+        - "857219500"
+        - "857222500"
+        - "857248400"
+        - "857248600"
+        - "857249500"
+        - "857250800"
+        # G19 IT Project Manager (National Institutes of Health): no requirements
+        # captured: "See vacancy announcement during the open period for position
+        # requirements."
+        - "783479300"
+        - "791612900"
+        - "802398000"
+        - "803062700"
+    set:
+      edu_category: not_a_posting
