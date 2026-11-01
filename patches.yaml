@@ -53,10 +53,6 @@ patches:
       model missed the alternative path.
     match:
       control_numbers:
-        # Navy BI Data Scientist — "A bachelor's degree... is required
-        # AND 3 years of experience OR an appropriate combination of
-        # education and experience"
-        - "844991500"
         # NOAA Lead IT INFOSEC — "positive Education Requirement in
         # addition to at least one year of Specialized Experience OR
         # substitution of education for experience OR combination"
@@ -338,3 +334,148 @@ patches:
         - "803062700"
     set:
       edu_category: not_a_posting
+
+  # ── Experience replaces the degree, never the reverse (2026-11-01) ─────
+  # Postings labeled education_substitutable whose only education language
+  # lets EXPERIENCE stand in for the degree ("degree AND N years OR an
+  # appropriate combination", "degree or equivalent experience" plus an
+  # experience minimum for everyone). A degree alone never qualifies, which
+  # is the site's definition of "Experience Only" ("a degree alone will not
+  # get you in"); "Degree is One Path" means a candidate with the degree and
+  # no experience can qualify. Each posting was read; the per-CN rulings and
+  # the 31 left as education_substitutable and 20 left unchanged as unclear
+  # are in reviews/experience_replaces_degree_2026-11-01.csv.
+  #
+  # 844991500 moved here from hand_verified_to_education_substitutable: its
+  # text ("A bachelor's degree ... is required AND 3 years of proven
+  # experience ... OR an appropriate combination of education and
+  # experience") is this pattern.
+  - name: experience_replaces_degree_to_no_education
+    description: |
+      Experience can replace the degree but a degree alone never qualifies,
+      so the site's "Experience Only" definition applies.
+    match:
+      control_numbers:
+        # Degree or equivalent, plus an experience minimum for everyone (27): "degree or equivalent experience" plus a separate experience minimum that applies to everyone (e.g. "Minimum 5 years of experience", "Must have at least two years of IT security experience")
+        - "843602900"  # IT Specialist (Software Developer/ Web Developer | Judicial Branch
+        - "854893100"  # IT Specialist (Software Developer/ Web Developer | Judicial Branch
+        - "844833900"  # Senior Drupal Full-Stack Developer | Legislative Branch
+        - "845768700"  # Senior Drupal Full-Stack Developer | Legislative Branch
+        - "846595600"  # Senior Network Systems Engineer | Legislative Branch
+        - "853964700"  # Senior Network Systems Engineer | Legislative Branch
+        - "854479000"  # Senior Network Systems Engineer | Legislative Branch
+        - "702871300"  # Network Communication Specialist | House of Representatives
+        - "732201500"  # Network Communication Specialist | House of Representatives
+        - "732214000"  # Network Communication Specialist | House of Representatives
+        - "729528800"  # Senior Scrum Master #5436 | Senate
+        - "729781800"  # IT Customer Solutions Supervisor | House of Representatives
+        - "732206900"  # IT Customer Solutions Supervisor | House of Representatives
+        - "732219500"  # IT Customer Solutions Supervisor | House of Representatives
+        - "732227800"  # IT Customer Solutions Supervisor | House of Representatives
+        - "741530200"  # PeopleSoft Senior Developer NF5 | U.S. Marine Corps
+        - "744273500"  # PeopleSoft Senior Developer NF5 | U.S. Marine Corps
+        - "742321800"  # Network Systems Engineer | House of Representatives
+        - "749127400"  # Chief of Continuous Monitoring | Office of the Director of Na
+        - "749127600"  # Chief of Continuous Monitoring | Office of the Director of Na
+        - "749128600"  # Chief of Continuous Monitoring | Office of the Director of Na
+        - "765087600"  # Director of Information Technology | U.S. Courts
+        - "803578900"  # Web Helpdesk Professional | House of Representatives
+        - "812028900"  # Network Communications Supervisor | House of Representatives
+        - "815834400"  # IT Project Manager | Office of the Director of Na
+        - "834802100"  # Senior Internet Systems Specialist | House of Representatives
+        - "838713700"  # Senior Internet Systems Specialist | House of Representatives
+        # Degree AND N years, OR a combination (52): "Bachelor's ... AND N years of experience ... OR an appropriate combination of education and experience": experience can replace the degree, a degree alone never qualifies
+        - "847870500"  # Supervisory Information System Security Manager  | Department of the Navy
+        - "853134600"  # Supervisory Information System Security Manager  | Department of the Navy
+        - "848333500"  # POS Specialist NF4 | Department of the Navy
+        - "852082000"  # Information System Security Manager (ISSM) | Department of the Navy
+        - "858068800"  # Information System Security Manager (ISSM) | Department of the Navy
+        - "854364700"  # Information System Security Manager (ISSM) NF5 | Department of the Navy
+        - "857337800"  # Cyber Security Analyst | Department of the Navy
+        - "698446100"  # Supervisory POS Specialist NF4 | U.S. Marine Corps
+        - "698549700"  # Technical Lead - Business Applications NF5 | U.S. Marine Corps
+        - "702510500"  # PeopleSoft Developer NF4 | U.S. Marine Corps
+        - "715839700"  # PeopleSoft Developer NF4 | U.S. Marine Corps
+        - "726790100"  # PeopleSoft Developer NF4 | U.S. Marine Corps
+        - "738266200"  # PeopleSoft Developer NF4 | U.S. Marine Corps
+        - "749540600"  # PeopleSoft Developer NF4 | U.S. Marine Corps
+        - "704999000"  # Information System Security Officer (ISSO) NF4 | U.S. Marine Corps
+        - "723803800"  # Information System Security Officer (ISSO) NF4 | U.S. Marine Corps
+        - "706014500"  # Security Control Assessor Representative NF5 | U.S. Marine Corps
+        - "712040000"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "712690300"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "721639300"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "786569000"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "770311500"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "794291400"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "800739800"  # Cyber Security Operation Center Lead NF5 | U.S. Marine Corps
+        - "713656400"  # Supervisory POS Specialist NF4 | U.S. Marine Corps
+        - "721270600"  # CUSTOMER RELATIONSHIP MANAGEMENT ADMINISTRATOR N | U.S. Marine Corps
+        - "736517200"  # Cloud Administrator NF4 | U.S. Marine Corps
+        - "743056400"  # BUSINESS ANALYST - BUSINESS INTELLIGENCE NF4 | U.S. Marine Corps
+        - "748016600"  # Senior Web Developer NF4 | U.S. Marine Corps
+        - "759872600"  # Information Technology Specialist (FPOS) NF4 | U.S. Marine Corps
+        - "763558100"  # Network Engineer NF4 | U.S. Marine Corps
+        - "765801400"  # PEOPLESOFT SYSTEM ADMINISTRATOR NF4 | U.S. Marine Corps
+        - "776456700"  # PEOPLESOFT SYSTEM ADMINISTRATOR NF4 | U.S. Marine Corps
+        - "784291700"  # PeopleSoft System Administrator NF4 | U.S. Marine Corps
+        - "799742500"  # PeopleSoft System Administrator NF4 | U.S. Marine Corps
+        - "779817100"  # Information System Security Officer (ISSO) NF4 | U.S. Marine Corps
+        - "768748100"  # Information System Security Manager (Flex) NF4 | U.S. Marine Corps
+        - "788606400"  # Information System Security Manager (Flex) NF4 | U.S. Marine Corps
+        - "830518100"  # Application System Specialist | U.S. Marine Corps
+        - "832988200"  # Information System Security Manager (ISSM) NF4 | U.S. Marine Corps
+        - "844991500"  # Business Information (BI) Data Scientist Supervi | Department of the Navy
+        - "853032600"  # PROJECT MANAGER NF4 | Department of the Navy
+        - "717713700"  # Lead Project Manager (PMO) NF4 | U.S. Marine Corps
+        - "721256400"  # DIGITAL ANALYTICS SPECIALIST NF4 | U.S. Marine Corps
+        - "724965200"  # Business Intelligence Programmer Analyst NF4Â | U.S. Marine Corps
+        - "760909400"  # WEB DEVELOPER/ANALYST NF4 | U.S. Marine Corps
+        - "766437400"  # Lead Project Manager (PMO) NF4 | U.S. Marine Corps
+        - "778206400"  # IT SPECIALIST - INFORMATION SECURITY | U.S. Marine Corps
+        - "779329600"  # PROJECT MANAGER (PMO) NF4 | U.S. Marine Corps
+        - "787272200"  # SENIOR PROJECT MANAGER NF5 | U.S. Marine Corps
+        - "799736900"  # Unix/Linux System Administrator | U.S. Marine Corps
+        - "834617200"  # BUSINESS ANALYST MERCHANDISING AND SUPPLY CHAIN | U.S. Marine Corps
+        # DoD CES degree-or-equivalent floor, experience required (11): DoD CES boilerplate "bachelor's degree or equivalent experience" as a floor, but the qualifications require IT-related and directly applicable experience from every applicant
+        - "858069500"  # IT CYBERSECURITY SPECIALIST (PLCYPLN) | Department of the Navy
+        - "862138400"  # IT SPECIALIST (INFOSEC/CUSTSPT) | Department of the Navy
+        - "785150900"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "794040800"  # IT CYBERSECURITY SPECIALIST (INFOSEC) | U.S. Marine Corps
+        - "799690300"  # IT SPECIALIST (SYSADMIN) | U.S. Marine Corps
+        - "807308600"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "813799500"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "820388100"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "815940200"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "830293400"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "846659100"  # IT CYBERSECURITY SPECIALIST (NETWORK) | U.S. Marine Corps
+        # Senate/Legislative: degree and N years, or an equivalent combination (25): "Work requires a Bachelor's ... and N years of experience ...; or any equivalent combination of education and experience" (or "Required Work Experience: N years"): experience can replace the degree, a
+        - "703871500"  # Technology Solutions Specialist #663 | Senate
+        - "706499800"  # Senior Systems Engineer #243 | Senate
+        - "725793000"  # Cybersecurity Senior Specialist #5317 | Senate
+        - "726229700"  # Cybersecurity Specialist #5347 | Senate
+        - "726443200"  # Product Owner #5435 | Senate
+        - "727203400"  # Senior Software Engineer #5433 | Senate
+        - "735724800"  # User Experience Designer #476 | Senate
+        - "735773100"  # User Experience Designer #476 | Senate
+        - "735772800"  # Senior Software Engineer #630 | Senate
+        - "735772900"  # Senior Software Engineer #990 | Senate
+        - "738657200"  # Quality Assurance Analyst #5431 | Senate
+        - "742201300"  # Senior User Experience Designer #778 | Senate
+        - "744169400"  # Senior Software Engineer #5433 | Senate
+        - "745979300"  # Technical Manager #238 | Senate
+        - "773421200"  # Information Assurance Branch Manager #5216 | Senate
+        - "856392100"  # Technical Solutions Architect (ServiceNow Cyber) | Legislative Branch
+        - "758478900"  # Technology Solutions Architect #5436 | Senate
+        - "760090100"  # Director, IT Support Services #100 | Senate
+        - "771406600"  # Director, IT Support Services #100 | Senate
+        - "776430600"  # Technology Solutions Architect #42 | Senate
+        - "793910500"  # Principal Continuity Communications Engineer #69 | Senate
+        - "794245500"  # Principal Continuity Communications Engineer #69 | Senate
+        - "811671900"  # Technology Solutions Architect #5483 | Senate
+        - "827410000"  # Technology Solutions Architect #5374 | Senate
+        - "829809100"  # Technology Solutions Architect #557 | Senate
+        # Degree only desired (1): bachelor's degree only under "Desired Requirements"; "One year of specialized experience at the next lower GS-grade" required
+        - "819136800"  # Program Director for Data and Tools | Office of the Director of Na
+    set:
+      edu_category: no_education
