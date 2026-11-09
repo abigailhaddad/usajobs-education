@@ -592,3 +592,39 @@ patches:
         - "806831300"  # IT Project Manager | Office of the Director of Nati
     set:
       edu_category: education_required
+
+  # ── Non-intelligence postings (2023-24) that state a degree as a basic requirement, with experience required in addition ──
+  # Found by the same reverse check as the intelligence-agency block above: rows labeled not-required whose full text
+  # states a degree (Education field 'Degree in ...', 'REQUIRED EDUCATION', 'basic education requirement', 'positive education
+  # requirement') and offers no experience-only path. Pathways/recent-graduate postings (degree is program eligibility) and
+  # postings that only say 'positive education requirement' without describing a degree were left alone.
+
+  - name: reviewed_2023_24_degree_stated_to_education_required
+    description: |
+      Education field states a degree as the basic requirement and specialized experience is required in
+      addition; no experience-only or equivalent-experience path to the same basic requirement. Medium
+      confidence on some Navy rows, where the Education field lists the degree option without the words
+      'basic requirement'.
+    match:
+      control_numbers:
+        - "676495700"  # ITSPEC (CUSTSPT) | Army National Guard Units
+        - "736633700"  # Supervisory IT Specialist (Data MGMT) | Office of the Inspector Genera
+        - "746944900"  # SUPERVISORY IT SPECIALIST | Naval Air Systems Command
+        - "750233300"  # INFORMATION TECHNOLOGY SPECIALIST (CUSTOMER  | Bureau of Naval Personnel
+        - "760941500"  # IT CYBERSECURITY SPECIALIST | Air National Guard Units
+        - "764485500"  # INFORMATION TECHNOLOGY SPECIALIST (APPSW) | U.S. Marine Corps
+        - "765908800"  # IT SPECIALIST (SYSANALYSIS/NETWORK) | Naval Education and Training C
+        - "769248200"  # IT CYBERSECURITY SPECIALIST (CUSTSPT/INFOSEC | US Army Financial Management C
+        - "774058500"  # INFORMATION TECHNOLOGY SPECIALIST (CUSTOMER  | Bureau of Naval Personnel
+        - "777098900"  # INFORMATION TECHNOLOGY SPECIALIST | 
+        - "777688900"  # IT CYBERSECURITY SPECIALIST (CUSTSPT/INFOSEC | US Army Financial Management C
+        - "778762600"  # IT Specialist (INFOSEC) | Office of the Inspector Genera
+        - "787064300"  # INFORMATION TECHNOLOGY SPECIALIST (INET/CUST | United States Fleet Forces Com
+        - "793830600"  # SUPERVISORY IT SPECIALIST (POLICY AND PLANNI | Naval Air Systems Command
+        - "798690500"  # IT SPECIALIST (INFOSEC) | Naval Air Systems Command
+        - "801940300"  # SUPERVISORY IT SPECIALIST (PLCYPLN/SYSANALYS | Naval Facilities Engineering S
+        - "807095800"  # INFORMATION TECHNOLOGY (CUSTOMER SUPPORT) | Bureau of Naval Personnel
+        - "814304700"  # INFORMATION TECHNOLOGY PROJECT MANAGER | Naval Air Systems Command
+        - "814830300"  # SUPERVISORY IT CYBERSECURITY SPECIALIST (INF | Air National Guard Units
+    set:
+      edu_category: education_required
