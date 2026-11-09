@@ -113,3 +113,24 @@ patches:
         - "778072900"
     set:
       edu_category: education_substitutable
+
+  - name: reviewed_2210_agrees_with_main_dataset_no_education
+    description: |
+      A 2210 posting that also appears in the main 2210 dataset (patches.yaml) and is labeled there from the
+      full text. Qualifies by one year of IT-related experience; the 'required' language is about obtaining a
+      DoD cyber workforce qualification (DoDM 8140), not a degree.
+    match:
+      control_numbers:
+        - "814444800"  # IT SPECIALIST (CUSTSPT) | U.S. Pacific Fleet
+    set:
+      edu_category: no_education
+
+  - name: reviewed_2210_agrees_with_main_dataset_education_substitutable
+    description: |
+      A 2210 posting that also appears in the main 2210 dataset, where its text offers 'or, equivalent
+      relevant work experience' alongside the degree.
+    match:
+      control_numbers:
+        - "743248500"  # Cyber Assessment Lead | Office of the Director of National Intelligence
+    set:
+      edu_category: education_substitutable
