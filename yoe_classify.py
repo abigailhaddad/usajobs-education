@@ -100,7 +100,7 @@ _GRADE_PREFIXES = (
 # Also "one year ... at the next lower grade" (handles "or will have one year
 # within N days of closing, at the next lower grade").
 _ONE_YEAR_PATTERNS = [
-    r"\b(?:at\s+least\s+)?(?:one|1)\s*(?:\(1\)\s*)?year[^.]{0,80}?\bexperience",
+    r"\b(?:at\s+least\s+)?(?:one|1)[-\s]*(?:\(1\)[-\s]*)?year[^.]{0,80}?\bexperience",
     r"\b52\s*weeks?\s+of(?:\s+\w+){0,5}?\s+experience",
     rf"\b52\s*weeks?\s+of(?:\s+\w+){{0,5}}?\s+at\s+(?:the\s+)?(?:next\s+(?:lower|higher)?\s*(?:grade|pay[-\s]?band|level)|equivalent\s+grade|equivalent\s+to\s+(?:the\s+)?(?:{_GRADE_PREFIXES})[-\s]?\d)",
     # TIG (time-in-grade) language — functionally equivalent to 1 year at prior grade.
@@ -110,15 +110,15 @@ _ONE_YEAR_PATTERNS = [
     r"\b12\s+months\s+of(?:\s+\w+){0,5}?\s+experience",
     r"\b12\s+months\s+experience",
     rf"\b(?:at\s+least\s+)?12\s+months[^.]{{0,300}}?(?:next\s+lower\s+(?:grade|pay[-\s]?band|level)|equivalent\s+to\s+(?:the\s+)?(?:{_GRADE_PREFIXES})[-\s]?\d)",
-    rf"\b(?:one|1)\s*(?:\(1\)\s*)?year[^.]{{0,300}}?(?:next\s+lower\s+(?:grade|pay[-\s]?band|level)|equivalent\s+to\s+(?:the\s+)?(?:{_GRADE_PREFIXES})[-\s]?\d)",
-    rf"\bat\s+least\s+(?:one|1)\s*(?:\(1\)\s*)?year[^.]{{0,300}}?(?:next\s+lower\s+(?:grade|pay[-\s]?band|level)|equivalent\s+to\s+(?:the\s+)?(?:{_GRADE_PREFIXES})[-\s]?\d)",
+    rf"\b(?:one|1)[-\s]*(?:\(1\)[-\s]*)?year[^.]{{0,300}}?(?:next\s+lower\s+(?:grade|pay[-\s]?band|level)|equivalent\s+to\s+(?:the\s+)?(?:{_GRADE_PREFIXES})[-\s]?\d)",
+    rf"\bat\s+least\s+(?:one|1)[-\s]*(?:\(1\)[-\s]*)?year[^.]{{0,300}}?(?:next\s+lower\s+(?:grade|pay[-\s]?band|level)|equivalent\s+to\s+(?:the\s+)?(?:{_GRADE_PREFIXES})[-\s]?\d)",
 ]
 
 # >1 year explicit thresholds. Excludes "1 year" (use [2-9]|[1-9]\d+).
 # "X years of [up to ~5 words] experience" / "24+ months ... experience".
 _MULTI_YEAR_PATTERNS = [
-    r"\b(?:two|three|four|five|six|seven|eight|nine|ten)\s+(?:\(\d+\)\s+)?years?\s+of(?:\s+\w+){0,5}?\s+experience",
-    r"\b(?:[2-9]|[1-9]\d+)\s+years?\s+of(?:\s+\w+){0,5}?\s+experience",
+    r"\b(?:two|three|four|five|six|seven|eight|nine|ten)\s+(?:\(\d+\)\s+)?(?:or\s+more\s+)?years?['’]?(?:\s+of)?(?:\s+\w+){0,5}?\s+experience",
+    r"\b(?:[2-9]|[1-9]\d+)\s+(?:or\s+more\s+)?years?['’]?(?:\s+of)?(?:\s+\w+){0,5}?\s+experience",
     r"\bat\s+least\s+(?:two|three|four|five|six|seven|eight|nine|ten|[2-9]|[1-9]\d+)\s+(?:\(\d+\)\s+)?years?",
     r"\b(?:24|30|36|48|60|72|84|96|108|120)\s+months\b[^.]{0,30}?(?:specialized|IT|experience|progressively|\bin\s+)",
     r"\b(?:minimum|at\s+least)\s+(?:of\s+)?(?:[2-9]|[1-9]\d+|two|three|four|five|six|seven|eight|nine|ten)\s+years?\s+of",
