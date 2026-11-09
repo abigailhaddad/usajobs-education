@@ -479,3 +479,68 @@ patches:
         - "819136800"  # Program Director for Data and Tools | Office of the Director of Na
     set:
       edu_category: no_education
+
+  # ── 2023-24 rows labeled education_required that the posting text does not support ──
+  # Found while checking the claim that almost no 2210 postings carry a hard degree requirement.
+  # Two independent readers (a person-checked pass and a blind second pass over the full Education +
+  # Qualifications text) agreed on each row below; rows they disagreed on, or that were ambiguous
+  # ('or equivalent' with no object, 'Desired Skills' only), were left as education_required.
+
+  - name: reviewed_2023_24_to_education_substitutable
+    description: |
+      Posting text offers the degree as one path alongside experience ("degree OR experience",
+      "bachelor's or equivalent experience", "you must have one of the following", "or 8-10 years related
+      experience", "no positive education requirement" with an experience path). The classifier read the degree
+      sentence alone.
+    match:
+      control_numbers:
+        - "744466900"  # Program Manager | National Geospatial-Intelligence A
+        - "752585700"  # Deputy Information System Security | Office of the Director of National
+        - "759309400"  # Cyber Security Officer | Central Intelligence Agency
+        - "798161600"  # Senior Information System Security Manager (IS | Office of the Director of National
+        - "798161700"  # Senior Information System Security Manager (IS | Office of the Director of National
+        - "810277500"  # IT Project Manager | Office of the Director of National
+        - "810279600"  # IT Project Manager | Office of the Director of National
+        - "812510200"  # IT PM for CI-Focused IT Systems | Office of the Director of National
+        - "776389900"  # IT Specialist | Office of the Director of National
+        - "776394100"  # IT Specialist | Office of the Director of National
+        - "776399400"  # IT Specialist | Office of the Director of National
+        - "751044400"  # IT SPECIALIST (APPSW) | Defense Intelligence Agency
+        - "713230500"  # IT Specialist (SYSADMIN) | National Park Service
+        - "789275600"  # IT CYBERSECURITY SPECIALIST (INFOSEC) | U.S. Marine Corps
+        - "789750200"  # IT CYBERSECURITY SPECIALIST (NETWORK/INFOSEC) | U.S. Marine Corps
+        - "796185600"  # IT SPECIALIST (INFOSEC) | U.S. Marine Corps
+        - "796482800"  # IT CYBERSECURITY SPECIALIST (PLCYPLN) | U.S. Marine Corps
+        - "796550200"  # Supervisory IT Specialist | Environmental Protection Agency
+        - "799132100"  # INFORMATION TECHNOLOGY SPECIALIST (NETWORK) | U.S. Marine Corps
+        - "799309900"  # Security Control Assessor (SCA) NF5 | U.S. Marine Corps
+        - "800237400"  # IT CYBERSECURITY SPECIALIST (INFOSEC/PLCYPLN) | U.S. Marine Corps
+        - "802163500"  # Supervisory Information Technology Specialist | Environmental Protection Agency
+        - "806390000"  # Senior Business Intelligence Analyst Developer | U.S. Marine Corps
+        - "807372400"  # IT Cybersecurity Specialist (INFOSEC) | National Telecommunications and In
+        - "807374300"  # IT Cybersecurity Specialist (INFOSEC) | National Telecommunications and In
+    set:
+      edu_category: education_substitutable
+
+  - name: reviewed_2023_24_to_no_education
+    description: |
+      Posting requires no degree: the degree is only desired or highly desirable, or the 'education
+      requirement' is a certification, or the qualification is experience only.
+    match:
+      control_numbers:
+        - "736698300"  # MCD Mission Program Manager | Office of the Director of National
+        - "752317200"  # SUPERVISORY IT SPECIALIST (PLCYPLN) | Commander, Navy Installations
+        - "776334900"  # IT SPECIALIST (NETWORK) (TITLE 5) | Air National Guard Units
+        - "816737900"  # Information Technology Specialist (INFOSEC) | Commission of Fine Arts
+        - "806695000"  # SUPV IT SPECIALIST (CUSTSPT/SYSADMIN) | 
+    set:
+      edu_category: no_education
+
+  - name: reviewed_2023_24_to_not_a_posting
+    description: |
+      Career-fair flyer for contracting positions, not an announcement for a 2210 job.
+    match:
+      control_numbers:
+        - "784311800"  # MDA CAREER FAIR (PUBLIC FLYER) | Missile Defense Agency
+    set:
+      edu_category: not_a_posting
