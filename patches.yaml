@@ -544,3 +544,51 @@ patches:
         - "784311800"  # MDA CAREER FAIR (PUBLIC FLYER) | Missile Defense Agency
     set:
       edu_category: not_a_posting
+
+  # ── Intelligence-agency postings (2023-24) whose text states a degree with no alternative path ──
+  # The model labeled these education_substitutable or no_education, while ODNI/CIA postings with the same wording are
+  # labeled education_required. Found by a reverse check (rows labeled not-required that state a degree) and confirmed by
+  # reading the full text: a degree is stated and no 'or equivalent experience' path appears anywhere.
+
+  - name: reviewed_2023_24_ic_degree_stated_to_education_required
+    description: |
+      Education field (or 'Mandatory Requirements') states a degree, and the full posting text offers no
+      experience-only or equivalent-experience path; experience is required in addition. The earlier label
+      missed that the degree is mandatory.
+    match:
+      control_numbers:
+        - "698016400"  # Account and Asset Management Lead | Office of the Director of Nati
+        - "698017300"  # Account and Asset Management Lead | Office of the Director of Nati
+        - "698018800"  # Account and Asset Management Lead | Office of the Director of Nati
+        - "698192800"  # CSG Staff ISSM | Office of the Director of Nati
+        - "698194900"  # CSG Staff ISSM | Office of the Director of Nati
+        - "698197800"  # CSG Staff ISSM | Office of the Director of Nati
+        - "707136500"  # IT Project Manager | Office of the Director of Nati
+        - "707141300"  # IT Project Manager | Office of the Director of Nati
+        - "710525900"  # Agency ISSM | Office of the Director of Nati
+        - "710529000"  # Agency ISSM | Office of the Director of Nati
+        - "714354000"  # CSG Staff ISSM | Office of the Director of Nati
+        - "714358700"  # CSG Staff ISSM | Office of the Director of Nati
+        - "721441200"  # IT PROJECT MANAGER | Office of the Director of Nati
+        - "724414700"  # Applications Developer | Central Intelligence Agency
+        - "731991600"  # IT Program Manager | Office of the Director of Nati
+        - "733051300"  # MCD Mission Program Manager | Office of the Director of Nati
+        - "733116800"  # MCD Mission Program Manager | Office of the Director of Nati
+        - "733264300"  # Data Institute Program Manager | Office of the Director of Nati
+        - "733274800"  # CSG Staff ISSM | Office of the Director of Nati
+        - "733275900"  # CSG Staff ISSM | Office of the Director of Nati
+        - "733277100"  # CSG Staff ISSM | Office of the Director of Nati
+        - "743737800"  # IT Policy & Governance | Office of the Director of Nati
+        - "759292900"  # Applications Developer | Central Intelligence Agency
+        - "763114800"  # Project Manager (Contracting Officer Technic | Office of the Director of Nati
+        - "775294900"  # Project Manager (Contracting Officer Technic | Office of the Director of Nati
+        - "775296500"  # Project Manager (Contracting Officer Technic | Office of the Director of Nati
+        - "784348400"  # National Manager Liaison | Office of the Director of Nati
+        - "793206300"  # MCD/Foreign Entities Group Chief | Office of the Director of Nati
+        - "793963100"  # National Manager Liaison | Office of the Director of Nati
+        - "793965000"  # National Manager Liaison | Office of the Director of Nati
+        - "800377400"  # MCD/Foreign Entities Group Chief | Office of the Director of Nati
+        - "800384000"  # MCD/Foreign Entities Group Chief | Office of the Director of Nati
+        - "806831300"  # IT Project Manager | Office of the Director of Nati
+    set:
+      edu_category: education_required
