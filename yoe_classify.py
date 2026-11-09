@@ -136,6 +136,55 @@ _AGE_EXCLUDE_RE = re.compile(
 
 
 
+# ── Preferred / desired experience is not required experience ────────────
+# A years-of-experience span that sits in a clause saying the experience is
+# only preferred, desired, a plus, or not required does not set the posting's
+# requirement. Clauses are split on sentence ends, ';', newlines and bullets.
+_CLAUSE_SPLIT_RE = re.compile(r"(?<!\d)\.|\.(?!\d)|;|\n|[\u2022\u25cf\u25aa\u00b7\u2023]")
+_PREFERRED_RE = re.compile(
+    r"\bprefer(?:red|s)?\b|\bdesired\b|\ba\s+plus\b|\bnice\s+to\s+have\b"
+    r"|\bnot\s+(?:be\s+)?(?:required|necessary)\b|\bis\s+optional\b|\bhelpful\b",
+    re.IGNORECASE,
+)
+# Negated forms are removed before looking for requirement words, so that
+# "preferred but not required" does not count as "required".
+_NEGATED_REQ_RE = re.compile(r"\bnot\s+(?:be\s+)?(?:required|necessary)\b", re.IGNORECASE)
+_REQUIRED_RE = re.compile(r"\brequired\b|\bmust\b|\bminimum\b", re.IGNORECASE)
+# "preferably in X" and "(... sectors preferred)" qualify the experience, they
+# do not make the years optional: drop parentheticals (except a bare
+# "(preferred)" / "(desired)") before looking for preference words.
+_PAREN_RE = re.compile(r"\([^)]*\)")
+_BARE_PREF_PAREN_RE = re.compile(
+    r"\(\s*(?:highly\s+)?(?:preferred|desired|a\s+plus|nice\s+to\s+have)\s*\)", re.IGNORECASE)
+
+
+def _clause_bounds(text: str, start: int, end: int) -> tuple[int, int]:
+    """Span of the clause(s) touched by text[start:end]."""
+    lo = 0
+    for m in _CLAUSE_SPLIT_RE.finditer(text, 0, start):
+        lo = m.end()
+    m = _CLAUSE_SPLIT_RE.search(text, end)
+    hi = m.start() if m else len(text)
+    return lo, hi
+
+
+def _is_preferred_only(text: str, start: int, end: int) -> bool:
+    lo, hi = _clause_bounds(text, start, end)
+    clause = text[lo:hi]
+    pref_view = _PAREN_RE.sub(lambda m: m.group(0) if _BARE_PREF_PAREN_RE.fullmatch(m.group(0)) else " ", clause)
+    if not _PREFERRED_RE.search(pref_view):
+        return False
+    return not _REQUIRED_RE.search(_NEGATED_REQ_RE.sub(" ", clause))
+
+
+def _first_required_match(regex: re.Pattern, text: str):
+    """First regex match that is not in a preferred/desired-only clause."""
+    for m in regex.finditer(text):
+        if not _is_preferred_only(text, m.start(), m.end()):
+            return m
+    return None
+
+
 def regex_classify(item: dict) -> dict:
     """Classify a row by regex. Returns a dict ready to attach to the row.
 
@@ -149,8 +198,8 @@ def regex_classify(item: dict) -> dict:
     # Same-length substitution preserves match indices for quote extraction.
     cleaned = _AGE_EXCLUDE_RE.sub(lambda m: " " * len(m.group(0)), text)
 
-    one_m = _ONE_YEAR_RE.search(cleaned)
-    multi_m = _MULTI_YEAR_RE.search(cleaned)
+    one_m = _first_required_match(_ONE_YEAR_RE, cleaned)
+    multi_m = _first_required_match(_MULTI_YEAR_RE, cleaned)
 
     cats: list[str] = []
     quotes: dict[str, str] = {}
